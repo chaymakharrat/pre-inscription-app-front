@@ -1,1 +1,117 @@
-/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #0d47a1;
+  --secondary-color: #1565c0;
+  --accent-color: #00bcd4;
+  --text-dark: #333;
+  --text-light: #fff;
+  --bg-light: #f4f7f6;
+  --border-color: #e0e0e0;
+
+  /* Animation timing */
+  --transition-fast: 150ms;
+  --transition-base: 300ms;
+  --transition-slow: 500ms;
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reusable animation utilities */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+/* Utility classes */
+.animate-fade-in {
+  animation: fadeIn var(--transition-base) var(--ease-smooth);
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp var(--transition-slow) var(--ease-smooth);
+}
+
+.animate-scale-in {
+  animation: scaleIn var(--transition-base) var(--ease-bounce);
+}
+
+.animate-shake {
+  animation: shake 0.5s var(--ease-smooth);
+}
+
+/* Focus visible for accessibility */
+*:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}

@@ -1,0 +1,186 @@
+/* Navbar Transparency and Auto-Hide Styles */
+
+/* Navbar base styles */
+nav {
+    transition: all 0.3s ease-in-out;
+}
+
+/* ========================================
+   TRANSPARENT STATE (seulement sur page d'accueil avec vidéo)
+   ======================================== */
+.navbar-transparent {
+    background: rgba(0, 0, 0, 0.15) !important;
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Texte BLANC sur transparent (pour contraster avec vidéo) */
+.navbar-transparent a,
+.navbar-transparent span,
+.navbar-transparent button:not(.bg-gradient-to-r),
+.navbar-transparent svg {
+    color: white !important;
+}
+
+/* Logo blanc sur transparent */
+.navbar-transparent .bg-gradient-to-r.bg-clip-text {
+    background: linear-gradient(90deg, #ffffff, #e0e7ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Hover sur transparent */
+.navbar-transparent a:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #93c5fd !important;
+}
+
+/* ========================================
+   SOLID STATE (style footer - par défaut sur toutes les pages)
+   ======================================== */
+.navbar-solid {
+    background: linear-gradient(135deg, #ffffff 0%, #d6e5f5 100%) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Texte DARK sur solid (fond clair) */
+.navbar-solid a,
+.navbar-solid span,
+.navbar-solid button:not(.bg-gradient-to-r),
+.navbar-solid svg {
+    color: #1e293b !important;
+    /* Slate-800 */
+}
+
+/* Logo bleu sur solid */
+.navbar-solid .bg-gradient-to-r.bg-clip-text {
+    background: linear-gradient(90deg, #2563eb, #1e40af);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Hover sur solid */
+.navbar-solid a:hover {
+    background: rgba(37, 99, 235, 0.05) !important;
+    color: #2563eb !important;
+}
+
+/* Boutons spécifiques sur solid */
+.navbar-solid .text-blue-600 {
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb !important;
+}
+
+.navbar-solid .text-blue-600:hover {
+    background: rgba(37, 99, 235, 0.2);
+}
+
+/* ========================================
+   NAVIGATION LINKS
+   ======================================== */
+nav a {
+    position: relative;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #60a5fa, #3b82f6);
+    transition: width 0.3s ease;
+}
+
+nav a:hover::after {
+    width: 100%;
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+nav button {
+    transition: all 0.3s ease;
+    border-radius: 0.5rem;
+}
+
+nav button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+}
+
+nav button:active {
+    transform: translateY(0);
+}
+
+/* Primary button (Pré-inscription) - toujours bleu */
+.bg-gradient-to-r.from-blue-600 {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    color: white !important;
+}
+
+.bg-gradient-to-r.from-blue-600:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+}
+
+/* Connexion button */
+.text-blue-600 {
+    background: rgba(255, 255, 255, 0.1);
+    color: white !important;
+}
+
+.text-blue-600:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ========================================
+   MOBILE MENU
+   ======================================== */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-down {
+    animation: slideDown 0.3s ease-out;
+}
+
+/* Mobile menu - toujours fond clair maintenant */
+nav .md\:hidden {
+    background: #ffffff;
+    border-top: 1px solid #f1f5f9;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile menu links - texte dark */
+nav .md\:hidden a,
+nav .md\:hidden button {
+    color: #1e293b !important;
+}
+
+nav .md\:hidden a:hover {
+    background: #f8fafc !important;
+    color: #2563eb !important;
+}
+
+/* ========================================
+   SMOOTH SCROLLING
+   ======================================== */
+html {
+    scroll-behavior: smooth;
+}
