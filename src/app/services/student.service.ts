@@ -13,6 +13,18 @@ export class StudentService {
 
     constructor(private http: HttpClient) { }
 
+    getStudentById(id: number): Observable<Student> {
+        return this.http.get<Student>(`${this.apiUrl}/${id}`);
+    }
+
+    /**
+     * Récupérer un étudiant par email (utilisé après connexion pour charger le profil étudiant).
+     */
+    getStudentByEmail(email: string): Observable<Student> {
+        const encodedEmail = encodeURIComponent(email);
+        return this.http.get<Student>(`${this.apiUrl}/email/${encodedEmail}`);
+    }
+
     createStudent(student: Student): Observable<Student> {
         return this.http.post<Student>(this.apiUrl, student);
     }
@@ -24,6 +36,11 @@ export class StudentService {
         formData.append('etudiantId', studentId.toString());
         return this.http.post(`${environment.apiUrl}/ETUDIANT-SERVICE/api/documents/upload`, formData);
     }
+
+    getDocumentsByEtudiant(etudiantId: number): Observable<any[]> {
+        return this.http.get<any[]>(`${environment.apiUrl}/ETUDIANT-SERVICE/api/documents/etudiant/${etudiantId}`);
+    }
+
 
     checkEmailExists(email: string): Observable<boolean> {
         return this.http.get<any>(`${this.apiUrl}/email/${email}`).pipe(

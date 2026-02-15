@@ -31,6 +31,8 @@ export interface Student {
     numPassport?: string;
     paysId?: number;
     documents?: Document[];
+    emailUniversitaire?: string;
+    matricule?: string;
 }
 
 export interface DemandeInscription {

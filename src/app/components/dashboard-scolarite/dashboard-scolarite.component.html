@@ -1,1 +1,654 @@
-<p>dashboard-scolarite works!</p>
+<div class="flex h-screen bg-gray-50">
+    <!-- Sidebar Navigation -->
+    <aside class="w-64 bg-white border-r border-gray-200">
+        <div class="p-6">
+            <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">NAVIGATION</h2>
+
+            <!-- Menu Items -->
+            <nav class="space-y-2">
+                <a (click)="goToAccueil()"
+                    class="flex items-center px-4 py-2 text-blue-600 bg-blue-50 rounded-lg cursor-pointer">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Accueil
+                </a>
+
+                <a (click)="goToDossiers()"
+                    class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Dossiers
+                    <span class="ml-auto bg-blue-600 text-white text-xs rounded-full px-2 py-1">{{stats.total}}</span>
+                </a>
+
+                <a (click)="openStatistiquesSection()"
+                    class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Statistiques
+                </a>
+
+                <a (click)="openNotificationsSection()"
+                    class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                    Notifications
+                    <span class="ml-auto bg-orange-500 text-white text-xs rounded-full px-2 py-1">4</span>
+                </a>
+            </nav>
+
+            <!-- Filtres Rapides -->
+            <div class="mt-8">
+                <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">FILTRES RAPIDES</h2>
+                <nav class="space-y-2">
+                    <a (click)="setFilter('nouveaux')" [class.bg-blue-50]="currentFilter === 'nouveaux'"
+                        [class.text-blue-600]="currentFilter === 'nouveaux'"
+                        class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Nouveaux
+                        <span
+                            class="ml-auto bg-blue-600 text-white text-xs rounded-full px-2 py-1">{{stats.enAttente}}</span>
+                    </a>
+
+                    <a (click)="setFilter('urgents')" [class.bg-blue-50]="currentFilter === 'urgents'"
+                        [class.text-blue-600]="currentFilter === 'urgents'"
+                        class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        Urgents
+                        <span
+                            class="ml-auto bg-red-600 text-white text-xs rounded-full px-2 py-1">{{stats.urgents}}</span>
+                    </a>
+
+                    <a (click)="setFilter('complets')" [class.bg-blue-50]="currentFilter === 'complets'"
+                        [class.text-blue-600]="currentFilter === 'complets'"
+                        class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Complets
+                    </a>
+
+                    <a (click)="setFilter('incomplets')" [class.bg-blue-50]="currentFilter === 'incomplets'"
+                        [class.text-blue-600]="currentFilter === 'incomplets'"
+                        class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Incomplets
+                        <span
+                            class="ml-auto bg-orange-600 text-white text-xs rounded-full px-2 py-1">{{stats.dossiersIncomplets}}</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Paramètres -->
+            <div class="mt-auto pt-8">
+                <a (click)="openParametresSection()"
+                    class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Paramètres
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto">
+        <!-- Header -->
+        <div class="bg-white border-b border-gray-200 px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Tableau de bord Scolarité</h1>
+                    <p class="text-gray-500 mt-1">Dossiers non encore validés : {{stats.enAttente}}</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button (click)="exportCsv()"
+                        class="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4h16v4H4V4zm0 6h16v10H4V10zm4 3l4 4 4-4" />
+                        </svg>
+                        Exporter
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="px-8 py-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- En attente -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="p-3 bg-blue-100 rounded-lg">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <span class="text-green-600 text-sm font-medium">↑ +5 aujourd'hui</span>
+                    </div>
+                    <h3 class="text-4xl font-bold text-gray-900">{{stats.enAttente}}</h3>
+                    <p class="text-gray-500 text-sm mt-1">En attente de traitement</p>
+                </div>
+
+                <!-- Délai moyen -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="p-3 bg-teal-100 rounded-lg">
+                            <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <span class="text-red-600 text-sm font-medium">↓ -0.3j</span>
+                    </div>
+                    <h3 class="text-4xl font-bold text-gray-900">{{stats.delaiMoyenTraitement}}</h3>
+                    <p class="text-gray-500 text-sm mt-1">Délai moyen de traitement</p>
+                </div>
+
+                <!-- Dossiers validés -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="p-3 bg-green-100 rounded-lg">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <span class="text-green-600 text-sm font-medium">↑ +12 sem.</span>
+                    </div>
+                    <h3 class="text-4xl font-bold text-gray-900">{{stats.validees}}</h3>
+                    <p class="text-gray-500 text-sm mt-1">Dossiers validés</p>
+                </div>
+
+                <!-- Taux de validation -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="p-3 bg-orange-100 rounded-lg">
+                            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                        </div>
+                        <span class="text-green-600 text-sm font-medium">↑ +3%</span>
+                    </div>
+                    <h3 class="text-4xl font-bold text-gray-900">92%</h3>
+                    <p class="text-gray-500 text-sm mt-1">Taux de validation</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="px-8 pb-8">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <!-- Search and Filters -->
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center space-x-4">
+                        <!-- Search -->
+                        <div class="flex-1 relative">
+                            <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="onSearch()"
+                                placeholder="Rechercher par nom, CIN, n° dossier..."
+                                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        </div>
+
+                        <!-- Filter Tabs -->
+                        <div class="flex space-x-2">
+                            <button (click)="setFilter('tous')" [class.bg-blue-50]="currentFilter === 'tous'"
+                                [class.text-blue-600]="currentFilter === 'tous'"
+                                [class.text-gray-600]="currentFilter !== 'tous'"
+                                class="px-4 py-2 rounded-lg hover:bg-gray-100">
+                                Tous
+                            </button>
+                            <button (click)="setFilter('complets')" [class.bg-blue-50]="currentFilter === 'complets'"
+                                [class.text-blue-600]="currentFilter === 'complets'"
+                                [class.text-gray-600]="currentFilter !== 'complets'"
+                                class="px-4 py-2 rounded-lg hover:bg-gray-100 font-semibold text-green-700">
+                                Prêts à valider
+                            </button>
+                            <button (click)="setFilter('nouveaux')" [class.bg-blue-50]="currentFilter === 'nouveaux'"
+                                [class.text-blue-600]="currentFilter === 'nouveaux'"
+                                [class.text-gray-600]="currentFilter !== 'nouveaux'"
+                                class="px-4 py-2 rounded-lg hover:bg-gray-100 font-semibold">
+                                Non validés
+                            </button>
+                            <button (click)="setFilter('urgents')" [class.bg-blue-50]="currentFilter === 'urgents'"
+                                [class.text-blue-600]="currentFilter === 'urgents'"
+                                [class.text-gray-600]="currentFilter !== 'urgents'"
+                                class="px-4 py-2 rounded-lg hover:bg-gray-100">
+                                Urgents (4j+)
+                            </button>
+                            <button (click)="setFilter('incomplets')"
+                                [class.bg-blue-50]="currentFilter === 'incomplets'"
+                                [class.text-blue-600]="currentFilter === 'incomplets'"
+                                [class.text-gray-600]="currentFilter !== 'incomplets'"
+                                class="px-4 py-2 rounded-lg hover:bg-gray-100">
+                                Incomplets
+                            </button>
+                            <button (click)="setFilter('valides')" [class.bg-blue-50]="currentFilter === 'valides'"
+                                [class.text-blue-600]="currentFilter === 'valides'"
+                                [class.text-gray-600]="currentFilter !== 'valides'"
+                                class="px-4 py-2 rounded-lg hover:bg-gray-100">
+                                Validés
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    N° DOSSIER</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    ÉTUDIANT</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    FORMATION</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    DATE</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    PIÈCES</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr *ngFor="let demande of demandes; let i = index" class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-blue-600 font-medium">#{{demande.numeroDossier}}</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div
+                                            [class]="getAvatarColor(i) + ' w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold'">
+                                            {{getInitials(demande.etudiant.nom, demande.etudiant.prenom)}}
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">{{demande.etudiant.nom}}
+                                                {{demande.etudiant.prenom}}</div>
+                                            <div class="text-sm text-gray-500">{{demande.etudiant.email}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-900">{{demande.nomDiplome}}</div>
+                                    <div class="text-sm text-gray-500">1ère année</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm" [class]="getDateStatusClass(demande.priorite)">
+                                        {{formatTime(demande.enAttenteDepuis)}}
+                                    </div>
+                                    <div class="text-xs" [class.text-red-600]="demande.priorite === 'HAUTE'"
+                                        [class.text-orange-600]="demande.priorite === 'MOYENNE'"
+                                        [class.text-blue-600]="demande.priorite === 'BASSE'">
+                                        • {{getPrioriteLabel(demande.priorite)}}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1"
+                                            [class.text-green-600]="areAllDocumentsSubmitted(demande.documents)"
+                                            [class.text-orange-600]="hasMissingDocuments(demande.documents)"
+                                            fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="text-sm font-medium">
+                                            {{getDocumentsSoumisCount(demande.documents)}} /
+                                            {{demande.documents.length}}
+                                        </span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                                        <div class="h-2 rounded-full"
+                                            [class.bg-green-600]="areAllDocumentsSubmitted(demande.documents)"
+                                            [class.bg-orange-600]="hasMissingDocuments(demande.documents)"
+                                            [style.width.%]="getCompletionPercentage(demande.documents)">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex items-center space-x-3">
+                                        <button (click)="openDemandeDetail(demande)"
+                                            class="text-blue-600 hover:text-blue-900">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                        </button>
+                                        <button (click)="openDemandeDetail(demande); openValidationDialog()"
+                                            class="text-green-600 hover:text-green-900">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </button>
+                                        <button (click)="openDemandeDetail(demande); openRejetDialog()"
+                                            class="text-red-600 hover:text-red-900">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                    <div class="text-sm text-gray-700">
+                        Affichage de 1 à {{demandes.length}} sur {{totalElements}} dossiers
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 0"
+                            [class.opacity-50]="currentPage === 0" [class.cursor-not-allowed]="currentPage === 0"
+                            class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            ←
+                        </button>
+                        <button *ngFor="let page of [].constructor(totalPages); let i = index" (click)="goToPage(i)"
+                            [class.bg-blue-600]="currentPage === i" [class.text-white]="currentPage === i"
+                            [class.border-blue-600]="currentPage === i"
+                            class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            {{i + 1}}
+                        </button>
+                        <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage >= totalPages - 1"
+                            [class.opacity-50]="currentPage >= totalPages - 1"
+                            [class.cursor-not-allowed]="currentPage >= totalPages - 1"
+                            class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal détail du dossier -->
+<div *ngIf="showModal && selectedDemande"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <!-- Modal Header -->
+        <div
+            class="sticky top-0 bg-white border-b border-gray-200 px-8 py-6 flex items-center justify-between rounded-t-2xl">
+            <div>
+                <p class="text-sm text-blue-600 font-medium uppercase">DOSSIER {{selectedDemande.numeroDossier}}</p>
+                <h2 class="text-2xl font-bold text-gray-900 mt-1">{{selectedDemande.etudiant.nom}}
+                    {{selectedDemande.etudiant.prenom}}</h2>
+            </div>
+            <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600 p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="px-8 py-6 space-y-6">
+            <!-- Informations personnelles -->
+            <div>
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">INFORMATIONS PERSONNELLES
+                </h3>
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-sm text-gray-500 uppercase mb-1">Date de naissance</p>
+                        <p class="text-base font-medium text-gray-900">{{selectedDemande.etudiant.dateNaissance}}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 uppercase mb-1">CIN</p>
+                        <p class="text-base font-medium text-blue-600">{{selectedDemande.etudiant.numCarteIdentite}}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 uppercase mb-1">Email</p>
+                        <p class="text-base font-medium text-gray-900">{{selectedDemande.etudiant.email}}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 uppercase mb-1">Téléphone</p>
+                        <p class="text-base font-medium text-gray-900">{{selectedDemande.etudiant.telephone}}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formation demandée -->
+            <div>
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">FORMATION DEMANDÉE</h3>
+                <div class="bg-blue-50 rounded-lg p-4 flex items-center">
+                    <div class="bg-blue-600 rounded-lg p-3">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-lg font-semibold text-blue-900">{{selectedDemande.nomDiplome}}</p>
+                        <p class="text-sm text-blue-700">1ère année — Régime Initial</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents soumis -->
+            <div>
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+                    DOCUMENTS SOUMIS
+                    ({{getDocumentsSoumisCount(selectedDemande.documents)}}/{{selectedDemande.documents.length}})
+                </h3>
+                <div class="space-y-3">
+                    <div *ngFor="let doc of selectedDemande.documents"
+                        class="flex items-center justify-between p-4 rounded-lg border"
+                        [class.border-green-200]="doc.statut === 'SOUMIS'" [class.bg-green-50]="doc.statut === 'SOUMIS'"
+                        [class.border-red-200]="doc.statut === 'MANQUANT'" [class.bg-red-50]="doc.statut === 'MANQUANT'"
+                        [class.border-blue-200]="doc.statut === 'MANQUANT'">
+                        <div class="flex items-center flex-1">
+                            <div class="mr-4">
+                                <svg *ngIf="doc.statut === 'SOUMIS'" class="w-6 h-6 text-green-600" fill="currentColor"
+                                    viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                <svg *ngIf="doc.statut === 'MANQUANT'" class="w-6 h-6 text-red-600" fill="currentColor"
+                                    viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-900">{{doc.type}}</p>
+                                <p *ngIf="doc.nomFichier" class="text-sm text-gray-500">{{doc.nomFichier}}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span
+                                [class]="getDocumentStatusClass(doc.statut) + ' text-xs font-semibold px-3 py-1 rounded-full'">
+                                {{doc.statut}}
+                            </span>
+                            <button *ngIf="doc.statut === 'SOUMIS'" (click)="downloadDocument(doc.documentId)"
+                                class="p-2 text-gray-400 hover:text-gray-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                            </button>
+                            <button *ngIf="doc.statut === 'SOUMIS'"
+                                (click)="viewDocument(doc.documentId, doc.nomFichier)"
+                                class="p-2 text-gray-400 hover:text-gray-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer with Actions -->
+        <div class="sticky bottom-0 bg-white border-t border-gray-200 px-8 py-6 rounded-b-2xl">
+            <div class="space-y-3">
+                <!-- Demander des pièces -->
+                <button (click)="openDemanderPiecesDialog()"
+                    class="w-full flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Demander des pièces
+                </button>
+
+                <div class="flex space-x-3">
+                    <!-- ✅ MODIFICATION : Bouton Valider - Uniquement si tous les documents sont soumis -->
+                    <button *ngIf="areAllDocumentsSubmitted(selectedDemande.documents)" (click)="openValidationDialog()"
+                        class="flex-1 flex items-center justify-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Valider le dossier
+                    </button>
+
+                    <!-- ✅ NOUVEAU : Message si dossier incomplet -->
+                    <div *ngIf="!areAllDocumentsSubmitted(selectedDemande.documents)"
+                        class="flex-1 flex items-center justify-center px-6 py-3 bg-orange-50 border border-orange-200 rounded-lg">
+                        <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <span class="text-orange-700 text-sm font-medium">Dossier incomplet - Documents manquants</span>
+                    </div>
+
+                    <!-- Rejeter - toujours visible -->
+                    <button (click)="openRejetDialog()"
+                        class="flex-1 flex items-center justify-center px-6 py-3 bg-red-100 text-red-700 rounded-lg hover:bg-red-200">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Rejeter le dossier
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dialogs de validation/rejet -->
+            <div *ngIf="showValidationDialog || showRejetDialog || showDemanderPiecesDialog"
+                class="mt-4 p-4 bg-gray-50 rounded-lg">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    {{ showValidationDialog ? 'Commentaire (optionnel)' : showRejetDialog ? 'Motif de rejet *' : 'Pièces
+                    demandées *' }}
+                </label>
+                <textarea [(ngModel)]="commentaire" rows="3"
+                    class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    [placeholder]="showValidationDialog ? 'Ajouter un commentaire...' : showRejetDialog ? 'Précisez la raison du rejet...' : 'Listez les pièces manquantes...'">
+        </textarea>
+                <div class="flex space-x-3 mt-3">
+                    <button (click)="closeModal()"
+                        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                        Annuler
+                    </button>
+                    <button *ngIf="showValidationDialog" (click)="validerDossier()" [disabled]="actionLoading"
+                        class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50">
+                        {{ actionLoading ? 'Traitement...' : 'Confirmer la validation' }}
+                    </button>
+                    <button *ngIf="showRejetDialog" (click)="rejeterDossier()"
+                        [disabled]="actionLoading || !commentaire.trim()"
+                        class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50">
+                        {{ actionLoading ? 'Traitement...' : 'Confirmer le rejet' }}
+                    </button>
+                    <button *ngIf="showDemanderPiecesDialog" (click)="demanderPieces()" [disabled]="!commentaire.trim()"
+                        class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                        Envoyer la demande
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- ============================================== -->
+    <!-- 3. NOUVEAU : Modal de visualisation des documents -->
+    <!-- AJOUTER ce code à la FIN du fichier HTML, juste avant la balise </div> finale -->
+    <!-- ============================================== -->
+
+    <!-- Modal de visualisation du document -->
+    <div *ngIf="showDocumentViewer"
+        class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl h-[90vh] flex flex-col">
+            <!-- Header du viewer -->
+            <div class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">{{currentDocumentName}}</h3>
+                        <p class="text-sm text-gray-500">Aperçu du document</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <a [href]="currentDocumentUrl | safe: 'resourceUrl'" [download]="currentDocumentName"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Télécharger
+                    </a>
+                    <button (click)="closeDocumentViewer()" class="text-gray-400 hover:text-gray-600 p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Corps du viewer - iframe pour afficher le document -->
+            <div class="flex-1 overflow-hidden bg-gray-100">
+                <iframe [src]="currentDocumentUrl | safe: 'resourceUrl'" class="w-full h-full border-0"
+                    *ngIf="currentDocumentUrl">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>

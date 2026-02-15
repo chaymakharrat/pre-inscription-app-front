@@ -2,6 +2,9 @@ import { Component, OnInit, HostListener, AfterViewInit, OnDestroy } from '@angu
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
+import { KeycloakService } from 'keycloak-angular';
+import { KeycloakProfile } from 'keycloak-js';
+import { CurrentStudentService } from '../../services/current-student.service';
 
 @Component({
   selector: 'app-navbar',
@@ -25,11 +28,36 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Données utilisateur
   isLoggedIn = false;
+  userProfile: KeycloakProfile | null = null;
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private keycloak: KeycloakService,
+    private currentStudentService: CurrentStudentService
+  ) { }
 
-  ngOnInit(): void {
-    this.checkAuthStatus();
+  async ngOnInit(): Promise<void> {
+    // Vérifier le statut de connexion
+    this.isLoggedIn = await this.keycloak.isLoggedIn();
+
+    if (this.isLoggedIn) {
+      try {
+        this.userProfile = await this.keycloak.loadUserProfile();
+        // Si l'utilisateur a le rôle ETUDIANT, charger ses données via l'email (lien compte ↔ étudiant)
+        if (this.hasRole('ETUDIANT') && this.userProfile?.email) {
+          this.currentStudentService.loadByEmail(this.userProfile.email).subscribe({
+            next: () => { },
+            error: (err) => console.warn('Impossible de charger le profil étudiant par email:', err)
+          });
+          const etudiant = this.currentStudentService.value;
+          console.log(etudiant);
+        } else {
+          this.currentStudentService.clear();
+        }
+      } catch (e) {
+        console.error('Failed to load user profile', e);
+      }
+    }
 
     // Détecter la route actuelle au chargement
     this.checkCurrentRoute();
@@ -156,25 +184,21 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.checkScrollPosition();
   }
 
-  checkAuthStatus(): void {
-    // TODO: Implement auth logic
+  async checkAuthStatus(): Promise<void> {
+    this.isLoggedIn = await this.keycloak.isLoggedIn();
   }
 
   navigateToLogin(): void {
-    this.router.navigate(['/login']);
-    this.closeMobileMenu();
-    this.closeUserMenu();
+    this.keycloak.login();
   }
 
   logout(): void {
-    this.isLoggedIn = false;
-    this.router.navigate(['/']);
-    this.closeMobileMenu();
-    this.closeUserMenu();
+    this.currentStudentService.clear();
+    this.keycloak.logout();
   }
 
   hasRole(role: string): boolean {
-    return true;
+    return this.keycloak.isUserInRole(role);
   }
 
   getInitials(name: string): string {

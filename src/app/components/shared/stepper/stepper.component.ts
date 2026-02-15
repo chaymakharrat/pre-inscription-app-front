@@ -1,10 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-interface Step {
+export interface Step {
   id: number;
   name: string;
   icon: string;
+  status?: 'completed' | 'active' | 'pending' | 'rejected';
 }
 
 @Component({
@@ -18,14 +19,13 @@ interface Step {
 
           <!-- Step circle with gradient border -->
           <div class="step-node">
-            <div
-              [class]="'step-circle ' +
-                (currentStep > step.id ? 'completed' :
-                 currentStep === step.id ? 'active' : 'inactive')"
-            >
-              <ng-container *ngIf="currentStep > step.id; else showIcon">
-                <svg class="checkmark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div [class]="getStepClass(step)">
+              <ng-container *ngIf="isCompleted(step); else showIcon">
+                <svg class="checkmark" fill="none" stroke="currentColor" viewBox="0 0 24 24" *ngIf="!isRejected(step)">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+                <svg class="checkmark text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" *ngIf="isRejected(step)">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18 6L6 18M6 6l12 12" />
                 </svg>
               </ng-container>
               <ng-template #showIcon>
@@ -34,7 +34,7 @@ interface Step {
             </div>
 
             <!-- Step label -->
-            <div [class]="'step-label ' + (currentStep === step.id ? 'label-active' : 'label-default')">
+            <div [class]="'step-label ' + (isActive(step) ? 'label-active' : 'label-default')">
               {{ step.name }}
             </div>
           </div>
@@ -43,7 +43,7 @@ interface Step {
           <div *ngIf="i < steps.length - 1" class="connector">
             <div
               class="connector-fill"
-              [style.width]="currentStep > step.id ? '100%' : '0%'"
+              [style.width]="isCompleted(step) ? '100%' : '0%'"
             ></div>
           </div>
 
@@ -153,6 +153,12 @@ interface Step {
       border: 2px solid #e2e8f0;
     }
 
+    /* Rejected */
+    .step-circle.rejected {
+      background: #fee2e2;
+      border: 2px solid #ef4444;
+    }
+
     .step-emoji {
       font-size: 1.4rem;
       line-height: 1;
@@ -240,8 +246,7 @@ interface Step {
 })
 export class StepperComponent {
   @Input() currentStep: number = 1;
-
-  steps: Step[] = [
+  @Input() steps: Step[] = [
     { id: 1, name: 'Informations personnelles', icon: '👤' },
     { id: 2, name: 'Informations académiques', icon: '🎓' },
     { id: 3, name: 'Documents requis', icon: '📄' },
@@ -249,5 +254,26 @@ export class StepperComponent {
 
   get progressPercentage(): number {
     return Math.round(((this.currentStep - 1) / (this.steps.length - 1)) * 100);
+  }
+
+  isCompleted(step: Step): boolean {
+    if (step.status) return step.status === 'completed';
+    return this.currentStep > step.id;
+  }
+
+  isActive(step: Step): boolean {
+    if (step.status) return step.status === 'active';
+    return this.currentStep === step.id;
+  }
+
+  isRejected(step: Step): boolean {
+    return step.status === 'rejected';
+  }
+
+  getStepClass(step: Step): string {
+    if (this.isRejected(step)) return 'step-circle rejected';
+    if (this.isCompleted(step)) return 'step-circle completed';
+    if (this.isActive(step)) return 'step-circle active';
+    return 'step-circle inactive';
   }
 }

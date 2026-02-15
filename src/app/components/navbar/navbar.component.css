@@ -38,6 +38,7 @@ nav {
     color: #93c5fd !important;
 }
 
+
 /* ========================================
    SOLID STATE (style footer - par défaut sur toutes les pages)
    ======================================== */
@@ -110,6 +111,7 @@ nav a:hover::after {
 nav button {
     transition: all 0.3s ease;
     border-radius: 0.5rem;
+
 }
 
 nav button:hover {
@@ -183,4 +185,25 @@ nav .md\:hidden a:hover {
    ======================================== */
 html {
     scroll-behavior: smooth;
+}
+
+/* ========================================
+   RESPONSIVE IMPROVEMENTS
+   ======================================== */
+@media (max-width: 768px) {
+    nav a::after {
+        display: none;
+        /* Pas d'underline sur mobile */
+    }
+}
+
+/* Logo responsive */
+nav img {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    transition: var(--transition-fast);
+}
+
+nav img:hover {
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
 }

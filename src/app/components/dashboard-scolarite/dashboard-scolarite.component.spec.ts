@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DashboardScolariteComponent } from './dashboard-scolarite.component';
+import { ScolariteDashboardComponent } from './dashboard-scolarite.component';
 
-describe('DashboardScolariteComponent', () => {
-  let component: DashboardScolariteComponent;
-  let fixture: ComponentFixture<DashboardScolariteComponent>;
+describe('ScolariteDashboardComponent', () => {
+  let component: ScolariteDashboardComponent;
+  let fixture: ComponentFixture<ScolariteDashboardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DashboardScolariteComponent]
+      imports: [ScolariteDashboardComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
-    fixture = TestBed.createComponent(DashboardScolariteComponent);
+    fixture = TestBed.createComponent(ScolariteDashboardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

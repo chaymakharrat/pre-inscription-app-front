@@ -15,18 +15,19 @@ import { PreInscriptionComponent } from '../pre-inscription/pre-inscription.comp
         <!-- Vidéo en arrière-plan -->
         <video 
           #backgroundVideo
-          autoPlay 
+          autoplay 
           loop 
           muted 
-          playsInline
-          class="absolute inset-0 w-full h-full object-cover transition-transform duration-100 ease-out"
+          playsinline
+          class="absolute inset-0 min-w-full min-h-full object-cover"
           [style.transform]="videoTransform"
+          style="width: 100%; height: 100%;"
         >
-          <source src="/assets/video_computer.mp4" type="video/mp4" />
+          <source src="assets/video_robot.mp4" type="video/mp4" />
         </video>
 
         <!-- Overlay gradient -->
-        <div class="absolute inset-0 bg-gradient-to-b from-blue-900/70 via-blue-900/50 to-blue-900/70"></div>
+        <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(105, 125, 170, 0.75) 0%, rgba(30,58,138,0.50) 40%, rgba(49,46,129,0.55) 70%, rgba(15,23,42,0.80) 100%);"></div>
 
         <!-- Floating Particles -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
@@ -73,9 +74,6 @@ import { PreInscriptionComponent } from '../pre-inscription/pre-inscription.comp
               class="cta-button bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-xl px-12 py-4 rounded-full font-semibold shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center gap-3 mx-auto relative overflow-hidden"
             >
               <span class="relative z-10">Commencer ma pré-inscription</span>
-              <svg class="w-6 h-6 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
             </button>
 
             <p class="mt-6 text-sm text-gray-300 flex items-center justify-center gap-2">
@@ -145,10 +143,19 @@ export class HomeComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
-    // S'assurer que la vidéo est muette et le volume à 0
+    // S'assurer que la vidéo est muette et forcer la lecture
     if (this.backgroundVideo?.nativeElement) {
-      this.backgroundVideo.nativeElement.muted = true;
-      this.backgroundVideo.nativeElement.volume = 0;
+      const video = this.backgroundVideo.nativeElement;
+      video.muted = true;
+      video.volume = 0;
+      video.play().catch(() => {
+        // Autoplay bloqué par le navigateur, on réessaie après interaction
+        const tryPlay = () => {
+          video.play();
+          document.removeEventListener('click', tryPlay);
+        };
+        document.addEventListener('click', tryPlay);
+      });
     }
   }
 

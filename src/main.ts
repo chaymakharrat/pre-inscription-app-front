@@ -1,3 +1,4 @@
+import '@angular/compiler'; // Nécessaire pour le JIT utilisé par les DevTools Angular en mode dev
 import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';

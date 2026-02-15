@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 // import { of, map, catchError } from 'rxjs';
@@ -18,6 +18,7 @@ import { FileUploadComponent } from '../shared/file-upload/file-upload.component
 import { AutoSaveIndicatorComponent } from '../shared/auto-save-indicator/auto-save-indicator.component';
 import { ActionButtonsComponent } from '../shared/action-buttons/action-buttons.component';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-pre-inscription',
@@ -29,7 +30,8 @@ import { animate, style, transition, trigger } from '@angular/animations';
     FileUploadComponent,
     AutoSaveIndicatorComponent,
     ActionButtonsComponent,
-    InputComponent
+    InputComponent,
+    FooterComponent
   ],
   templateUrl: './pre-inscription.component.html',
   styleUrl: './pre-inscription.component.css',
@@ -42,7 +44,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
     ])
   ]
 })
-export class PreInscriptionComponent implements OnInit {
+export class PreInscriptionComponent implements OnInit, OnDestroy {
   inscriptionForm!: FormGroup;
   countries: Country[] = [];
   diplomas: DiplomeEtudier[] = [];
@@ -52,6 +54,10 @@ export class PreInscriptionComponent implements OnInit {
   isSaving = false;
   selectedFiles: Map<string, File> = new Map();
   idType: 'cin' | 'passport' = 'cin';
+
+  private readonly DRAFT_KEY = 'pre_inscription_draft';
+  private readonly DRAFT_MAX_AGE_MS = 30 * 60 * 1000; // 30 minutes
+  private draftExpiryTimer: any = null;
 
   lastDiplomas = ['BACCALAUREAT', 'LICENCE', 'MASTERE', 'INGENIEUR'];
 
@@ -77,6 +83,13 @@ export class PreInscriptionComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.loadInitialData();
+    this.startDraftExpiryTimer();
+  }
+
+  ngOnDestroy(): void {
+    if (this.draftExpiryTimer) {
+      clearTimeout(this.draftExpiryTimer);
+    }
   }
 
   initForm(): void {
@@ -159,13 +172,7 @@ export class PreInscriptionComponent implements OnInit {
     } else if (this.currentStep === 2) {
       return this.academicInfo.valid;
     } else if (this.currentStep === 3) {
-      const allRequiredSelected = this.requiredDocuments.every(doc =>
-        !doc.required || this.selectedFiles.has(doc.type)
-      );
-      const allExtraSelected = this.extraDocuments.every(doc =>
-        !doc.required || this.selectedFiles.has(doc.type)
-      );
-      return allRequiredSelected && allExtraSelected;
+      return true;
     }
     return false;
   }
@@ -173,16 +180,30 @@ export class PreInscriptionComponent implements OnInit {
   private autoSave(data: any): void {
     if (this.inscriptionForm.pristine) return;
     this.isSaving = true;
-    localStorage.setItem('pre_inscription_draft', JSON.stringify(data));
+    const draft = {
+      data,
+      savedAt: Date.now()
+    };
+    localStorage.setItem(this.DRAFT_KEY, JSON.stringify(draft));
+    this.startDraftExpiryTimer();
     setTimeout(() => {
       this.isSaving = false;
     }, 1000);
   }
 
   private restoreForm(): void {
-    const saved = localStorage.getItem('pre_inscription_draft');
+    const saved = localStorage.getItem(this.DRAFT_KEY);
     if (saved) {
-      const data = JSON.parse(saved);
+      const draft = JSON.parse(saved);
+
+      // Vérifier si le brouillon a expiré (30 min)
+      if (draft.savedAt && (Date.now() - draft.savedAt) > this.DRAFT_MAX_AGE_MS) {
+        localStorage.removeItem(this.DRAFT_KEY);
+        console.log('Brouillon expiré, suppression automatique.');
+        return;
+      }
+
+      const data = draft.data || draft; // compatibilité ancien format
       this.inscriptionForm.patchValue(data, { emitEvent: false });
 
       // Manually trigger updates for dependent fields if needed
@@ -196,6 +217,34 @@ export class PreInscriptionComponent implements OnInit {
         }
       }
     }
+  }
+
+  /** Démarre un timer pour supprimer le brouillon après 30 minutes */
+  private startDraftExpiryTimer(): void {
+    // Annuler le timer précédent
+    if (this.draftExpiryTimer) {
+      clearTimeout(this.draftExpiryTimer);
+    }
+
+    const saved = localStorage.getItem(this.DRAFT_KEY);
+    if (!saved) return;
+
+    const draft = JSON.parse(saved);
+    const elapsed = Date.now() - (draft.savedAt || Date.now());
+    const remaining = this.DRAFT_MAX_AGE_MS - elapsed;
+
+    if (remaining <= 0) {
+      // Déjà expiré
+      localStorage.removeItem(this.DRAFT_KEY);
+      console.log('Brouillon expiré, suppression automatique.');
+      return;
+    }
+
+    // Programmer la suppression dans le temps restant
+    this.draftExpiryTimer = setTimeout(() => {
+      localStorage.removeItem(this.DRAFT_KEY);
+      console.log('Brouillon supprimé automatiquement après 30 minutes.');
+    }, remaining);
   }
 
   setIdType(type: 'cin' | 'passport'): void {
@@ -420,9 +469,13 @@ export class PreInscriptionComponent implements OnInit {
           if (!student) return of(null);
 
           // 4. Create Enrollment Request
+          // Retrieve the name of the diploma from the list using the ID
+          const selectedDiploma = this.diplomas.find(d => d.id == formValue.academicInfo.diplomeVise);
+          const diplomeName = selectedDiploma ? selectedDiploma.nom : formValue.academicInfo.diplomeVise.toString();
+
           const demande: DemandeInscription = {
             etudiantId: student.id!,
-            nomDiplome: formValue.academicInfo.diplomeVise,
+            nomDiplome: diplomeName, // Send the name, not the ID
             dateCreation: new Date().toISOString(),
           };
 
@@ -433,7 +486,7 @@ export class PreInscriptionComponent implements OnInit {
         next: (res) => {
           if (res) {
             this.isSubmitting = false;
-            localStorage.removeItem('pre_inscription_draft'); // Added this line
+            localStorage.removeItem(this.DRAFT_KEY);
             this.alertService.success('Inscription réussie ! Votre demande a été enregistrée.');
             this.resetForm();
           } else {

@@ -1,8 +1,8 @@
-import { ApplicationConfig, provideZoneChangeDetection, APP_INITIALIZER } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection, APP_INITIALIZER, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideHttpClient, withFetch } from '@angular/common/http';
-import { KeycloakService } from 'keycloak-angular';
+import { provideHttpClient, withFetch, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { KeycloakService, KeycloakBearerInterceptor } from 'keycloak-angular';
 import { routes } from './app.routes';
 
 function initializeKeycloak(keycloak: KeycloakService) {
@@ -14,10 +14,11 @@ function initializeKeycloak(keycloak: KeycloakService) {
         clientId: 'inscription-front-angular',
       },
       initOptions: {
-        onLoad: 'login-required', // ✅ CHANGEMENT ICI : Force le login
+        onLoad: 'login-required',
         checkLoginIframe: false,
-        // Retirez silentCheckSsoRedirectUri car non nécessaire avec login-required
       },
+      enableBearerInterceptor: true,
+      bearerExcludedUrls: ['/assets', '/clients/public'],
     });
 }
 
@@ -26,7 +27,12 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimations(),
-    provideHttpClient(withFetch()),
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: KeycloakBearerInterceptor,
+      multi: true
+    },
     KeycloakService,
     {
       provide: APP_INITIALIZER,
