@@ -1,10 +1,13 @@
-// src/app/components/scolarite-dashboard/scolarite-dashboard.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { CamundaTask, DemandeDetailDTO, PageResponse, ScolariteService } from '../../services/scolarite.service';
 import { SafePipe } from '../../pipes/safe.pipe';
+import { HostListener } from '@angular/core';
+import { Router } from '@angular/router';
+import { KeycloakService } from 'keycloak-angular';
+import { KeycloakProfile } from 'keycloak-js';
 
 
 @Component({
@@ -15,7 +18,27 @@ import { SafePipe } from '../../pipes/safe.pipe';
   styleUrl: './dashboard-scolarite.component.css'
 })
 export class ScolariteDashboardComponent implements OnInit {
+
+  showExportMenu = false;
+  selectedDemandes: DemandeDetailDTO[] = [];
+  selectAll = false;
+  isLoggedIn = false;
+  userProfile: KeycloakProfile | null = null;
   Math = Math;
+  // Tri du tableau
+  sortColumn: string = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
+
+  // Recherche avancée
+  searchHistory: string[] = [];
+
+  // Système & Notifications
+  systemStatus = {
+    operational: true,
+    lastUpdate: new Date(),
+    message: 'Système opérationnel'
+  };
+  notificationCount = 4;
   // Statistiques
   stats = {
     total: 0,
@@ -30,7 +53,7 @@ export class ScolariteDashboardComponent implements OnInit {
   // Liste des dossiers
   demandes: DemandeDetailDTO[] = [];
   currentPage = 0;
-  pageSize = 10;
+  pageSize = 6;
   totalPages = 0;
   totalElements = 0;
   // Variables pour le visualiseur de documents
@@ -60,9 +83,17 @@ export class ScolariteDashboardComponent implements OnInit {
   showDemanderPiecesDialog = false;
 
 
-  constructor(private scolariteService: ScolariteService) { }
+  constructor(private scolariteService: ScolariteService, private router: Router, private keycloak: KeycloakService) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.isLoggedIn = await this.keycloak.isLoggedIn();
+    if (this.isLoggedIn) {
+      try {
+        this.userProfile = await this.keycloak.loadUserProfile();
+      } catch (error) {
+        console.error('Erreur chargement profil:', error);
+      }
+    }
     this.loadStatistiques();
     this.loadDemandes();
   }
@@ -77,13 +108,13 @@ export class ScolariteDashboardComponent implements OnInit {
   }
 
   openStatistiquesSection() {
+    this.router.navigate(['/statistiques']);
     // Remonte en haut de la page (cartes de stats)
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   openNotificationsSection() {
-    // À remplacer par un vrai centre de notifications plus tard
-    alert('Centre de notifications à implémenter.');
+    this.router.navigate(['/notifications']);
   }
 
   openParametresSection() {
@@ -192,8 +223,15 @@ export class ScolariteDashboardComponent implements OnInit {
     this.loadDemandes();
   }
 
+  // ✅ REMPLACER votre méthode onSearch() par celle-ci
   onSearch() {
     if (this.searchTerm.trim()) {
+      // Ajouter à l'historique
+      if (!this.searchHistory.includes(this.searchTerm)) {
+        this.searchHistory.unshift(this.searchTerm);
+        this.searchHistory = this.searchHistory.slice(0, 5); // Garder les 5 dernières
+      }
+
       this.scolariteService.searchByDiplome(this.searchTerm, this.currentPage, this.pageSize).subscribe({
         next: (response) => {
           this.demandes = response.content;
@@ -304,6 +342,14 @@ export class ScolariteDashboardComponent implements OnInit {
       }
     });
   }
+  // Ajouter cette méthode pour fermer le menu en cliquant ailleurs
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.export-menu-container')) {
+      this.showExportMenu = false;
+    }
+  }
 
   demanderPieces() {
     if (!this.commentaire.trim()) {
@@ -373,15 +419,6 @@ export class ScolariteDashboardComponent implements OnInit {
       return 'Il y a ' + jours + 'j';
     }
   }
-
-  // downloadDocument(documentId: number) {
-  //   // TODO: Implémenter le téléchargement via le service
-  //   window.open(`http://localhost:8081/api/documents/download/${documentId}`, '_blank');
-  // }
-
-  // viewDocument(documentId: number) {
-  //   this.downloadDocument(documentId);
-  // }
   /**
  * ✅ MODIFIÉ : Utiliser l'endpoint /view pour la visualisation inline
  * Cet endpoint retourne le document avec Content-Disposition: inline
@@ -458,6 +495,263 @@ export class ScolariteDashboardComponent implements OnInit {
   getCompletionPercentage(documents: any[]): number {
     if (!documents || documents.length === 0) return 0;
     return (this.getDocumentsSoumisCount(documents) / documents.length) * 100;
+  }
+  // ========== NOUVELLES MÉTHODES À AJOUTER ==========
+
+  /**
+   * Basculer le menu d'export
+   */
+  toggleExportMenu(): void {
+    this.showExportMenu = !this.showExportMenu;
+  }
+
+  /**
+   * Export Excel amélioré
+   */
+  exportExcel(): void {
+    if (!this.demandes || this.demandes.length === 0) {
+      alert('Aucun dossier à exporter.');
+      return;
+    }
+
+    // TODO: Implémenter avec une librairie comme xlsx
+    console.log('Export Excel:', this.demandes.length, 'dossiers');
+    alert('📊 Export Excel à implémenter avec la librairie xlsx');
+    this.showExportMenu = false;
+  }
+
+  /**
+   * Export PDF
+   */
+  exportPdf(): void {
+    if (!this.demandes || this.demandes.length === 0) {
+      alert('Aucun dossier à exporter.');
+      return;
+    }
+
+    // TODO: Implémenter avec jsPDF ou pdfmake
+    console.log('Export PDF:', this.demandes.length, 'dossiers');
+    alert('📄 Export PDF à implémenter avec jsPDF');
+    this.showExportMenu = false;
+  }
+
+  /**
+   * Sélectionner/Désélectionner tous les dossiers
+   */
+  toggleSelectAll(): void {
+    this.selectAll = !this.selectAll;
+    if (this.selectAll) {
+      this.selectedDemandes = [...this.demandes];
+    } else {
+      this.selectedDemandes = [];
+    }
+  }
+
+  /**
+   * Sélectionner/Désélectionner un dossier
+   */
+  toggleSelectDemande(demande: DemandeDetailDTO): void {
+    const index = this.selectedDemandes.findIndex(d => d.id === demande.id);
+    if (index > -1) {
+      this.selectedDemandes.splice(index, 1);
+    } else {
+      this.selectedDemandes.push(demande);
+    }
+    this.selectAll = this.selectedDemandes.length === this.demandes.length;
+  }
+
+  /**
+   * Vérifier si un dossier est sélectionné
+   */
+  isDossierSelected(demande: DemandeDetailDTO): boolean {
+    return this.selectedDemandes.some(d => d.id === demande.id);
+  }
+
+  /**
+   * Valider plusieurs dossiers en masse
+   */
+  validerDossiersEnMasse(): void {
+    if (this.selectedDemandes.length === 0) {
+      alert('⚠️ Aucun dossier sélectionné');
+      return;
+    }
+
+    // Vérifier que tous les dossiers sont complets
+    const incomplets = this.selectedDemandes.filter(d =>
+      !this.areAllDocumentsSubmitted(d.documents)
+    );
+
+    if (incomplets.length > 0) {
+      alert(`❌ ${incomplets.length} dossier(s) incomplet(s) ne peuvent pas être validés`);
+      return;
+    }
+
+    if (!confirm(`Valider ${this.selectedDemandes.length} dossier(s) ?`)) {
+      return;
+    }
+
+    this.actionLoading = true;
+
+    // Créer les observables de validation
+    const validations = this.selectedDemandes.map(demande => {
+      return this.scolariteService.completeTask(
+        demande.taskId || '',
+        'ACCEPTE',
+        'Validation groupée',
+        'scolarite_admin'
+      );
+    });
+
+    // Exécuter en parallèle
+    forkJoin(validations).subscribe({
+      next: () => {
+        this.actionLoading = false;
+        alert(`✅ ${this.selectedDemandes.length} dossier(s) validé(s) avec succès`);
+        this.selectedDemandes = [];
+        this.selectAll = false;
+        this.loadDemandes();
+        this.loadStatistiques();
+      },
+      error: (error) => {
+        this.actionLoading = false;
+        console.error('Erreur validation groupée:', error);
+        alert('❌ Erreur lors de la validation groupée');
+      }
+    });
+  }
+
+  /**
+   * Rejeter plusieurs dossiers en masse
+   */
+  rejeterDossiersEnMasse(): void {
+    if (this.selectedDemandes.length === 0) {
+      alert('⚠️ Aucun dossier sélectionné');
+      return;
+    }
+
+    const motif = prompt(`Motif de rejet pour ${this.selectedDemandes.length} dossier(s):`);
+
+    if (!motif || !motif.trim()) {
+      alert('⚠️ Motif de rejet requis');
+      return;
+    }
+
+    this.actionLoading = true;
+
+    const rejets = this.selectedDemandes.map(demande => {
+      return this.scolariteService.completeTask(
+        demande.taskId || '',
+        'REJETE',
+        motif,
+        'scolarite_admin'
+      );
+    });
+
+    forkJoin(rejets).subscribe({
+      next: () => {
+        this.actionLoading = false;
+        alert(`✅ ${this.selectedDemandes.length} dossier(s) rejeté(s)`);
+        this.selectedDemandes = [];
+        this.selectAll = false;
+        this.loadDemandes();
+        this.loadStatistiques();
+      },
+      error: (error) => {
+        this.actionLoading = false;
+        console.error('Erreur rejet groupé:', error);
+        alert('❌ Erreur lors du rejet groupé');
+      }
+    });
+  }
+
+  /**
+   * Trier le tableau par colonne
+   */
+  sortByColumn(column: string): void {
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+
+    this.demandes.sort((a, b) => {
+      let valueA: any;
+      let valueB: any;
+
+      switch (column) {
+        case 'numero':
+          valueA = a.numeroDossier;
+          valueB = b.numeroDossier;
+          break;
+        case 'nom':
+          valueA = a.etudiant.nom;
+          valueB = b.etudiant.nom;
+          break;
+        case 'formation':
+          valueA = a.nomDiplome;
+          valueB = b.nomDiplome;
+          break;
+        case 'date':
+          valueA = new Date(a.dateCreation).getTime();
+          valueB = new Date(b.dateCreation).getTime();
+          break;
+        case 'progression':
+          valueA = this.getCompletionPercentage(a.documents);
+          valueB = this.getCompletionPercentage(b.documents);
+          break;
+        default:
+          return 0;
+      }
+
+      if (valueA < valueB) {
+        return this.sortDirection === 'asc' ? -1 : 1;
+      }
+      if (valueA > valueB) {
+        return this.sortDirection === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  }
+
+  /**
+   * Effacer la recherche
+   */
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.loadDemandes();
+  }
+
+  /**
+   * Obtenir la classe CSS pour l'icône de tri
+   */
+  getSortIconClass(column: string): string {
+    if (this.sortColumn !== column) {
+      return 'text-gray-400';
+    }
+    return this.sortDirection === 'asc'
+      ? 'text-blue-600'
+      : 'text-blue-600 transform rotate-180';
+  }
+  logout(): void {
+    this.keycloak.logout();
+  }
+
+  hasRole(role: string): boolean {
+    return this.keycloak.isUserInRole(role);
+  }
+
+  getDisplayRole(): string {
+    if (this.hasRole('ADMIN')) return 'Administrateur';
+    if (this.hasRole('AGENT_SCOLARITE')) return 'AGENT_SCOLARITE';
+    return 'Agent Scolarité';
+  }
+
+  getProfileInitials(): string {
+    if (!this.userProfile) return 'IT';
+    const first = this.userProfile.firstName?.charAt(0) || '';
+    const last = this.userProfile.lastName?.charAt(0) || '';
+    return (first + last).toUpperCase() || 'IT';
   }
 
 }

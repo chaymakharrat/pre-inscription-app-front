@@ -1,132 +1,102 @@
-/* Styles personnalisés pour le dashboard scolarité */
+/* ============================================== */
+/* STYLES AMÉLIORÉS - DASHBOARD SCOLARITÉ */
+/* ============================================== */
 
-/* Animation pour le modal */
-.modal-overlay {
-    animation: fadeIn 0.3s ease-in-out;
+/* ========== VARIABLES CSS ========== */
+:host {
+    /* Dashboard layout */
+    --sidebar-width: 260px;
+    --header-height: 80px;
+
+    /* Couleurs principales - tons clairs et lumineux */
+    --primary-50: #EFF6FF;
+    --primary-100: #DBEAFE;
+    --primary-200: #BFDBFE;
+    --primary-500: #3B82F6;
+    --primary-600: #2563EB;
+    --primary-700: #1D4ED8;
+
+    /* Success */
+    --success-50: #ECFDF5;
+    --success-100: #D1FAE5;
+    --success-500: #10B981;
+    --success-600: #059669;
+
+    /* Warning */
+    --warning-50: #FFF7ED;
+    --warning-100: #FFEDD5;
+    --warning-500: #F59E0B;
+    --warning-600: #D97706;
+
+    /* Danger */
+    --danger-50: #FEF2F2;
+    --danger-100: #FEE2E2;
+    --danger-500: #EF4444;
+    --danger-600: #DC2626;
+
+    /* Neutres clairs */
+    --gray-50: #F9FAFB;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --gray-300: #D1D5DB;
+    --gray-400: #9CA3AF;
+    --gray-500: #6B7280;
+    --gray-600: #4B5563;
+    --gray-700: #374151;
+    --gray-800: #1F2937;
+    --gray-900: #111827;
+
+    /* Autres couleurs */
+    --purple-50: #FAF5FF;
+    --purple-100: #F3E8FF;
+    --purple-500: #A855F7;
+    --purple-600: #9333EA;
+
+    --orange-50: #FFF7ED;
+    --orange-100: #FFEDD5;
+    --orange-500: #F97316;
+    --orange-600: #EA580C;
+
+    --teal-50: #F0FDFA;
+    --teal-100: #CCFBF1;
+    --teal-500: #14B8A6;
+    --teal-600: #0D9488;
+
+    --indigo-50: #EEF2FF;
+    --indigo-100: #E0E7FF;
+    --indigo-500: #6366F1;
+    --indigo-600: #4F46E5;
+
+    /* Ombres */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ========== ANIMATIONS ========== */
+
+/* Animation de fondu */
 @keyframes fadeIn {
     from {
         opacity: 0;
+        transform: translateY(10px);
     }
 
     to {
         opacity: 1;
+        transform: translateY(0);
     }
 }
 
-/* Transition pour les boutons */
-button {
-    transition: all 0.2s ease-in-out;
-}
-
-/* Personnalisation de la scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #cbd5e0;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #a0aec0;
-}
-
-/* Styles pour le loading */
-.loading-spinner {
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid #3b82f6;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-/* Hover effects pour les lignes du tableau */
-tbody tr {
-    transition: background-color 0.15s ease-in-out;
-}
-
-/* Focus styles pour l'accessibilité */
-input:focus,
-textarea:focus,
-button:focus {
-    outline: none;
-}
-
-/* Style pour les badges */
-.badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    line-height: 1;
-}
-
-/* Animations pour les cards de statistiques */
-.stat-card {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-/* Style pour les tabs actifs */
-.tab-active {
-    position: relative;
-}
-
-.tab-active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background-color: #3b82f6;
-}
-
-/* Progress bar animation */
-.progress-bar {
-    transition: width 0.5s ease-in-out;
-}
-
-/* Document status icons */
-.document-icon {
-    transition: transform 0.2s ease-in-out;
-}
-
-.document-icon:hover {
-    transform: scale(1.1);
-}
-
-/* Modal animations */
-.modal-content {
-    animation: slideUp 0.3s ease-out;
-}
-
+/* Animation de glissement vers le haut */
 @keyframes slideUp {
     from {
         opacity: 0;
@@ -139,38 +109,656 @@ button:focus {
     }
 }
 
-/* Avatar colors consistency */
-.avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    color: white;
+/* Animation de glissement depuis la gauche */
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-/* Tooltip styles (if needed) */
+.dashboard-layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: white;
+}
+
+.dashboard-sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: linear-gradient(135deg, #ffffff 0%, #d6e5f5 100%);
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    color: #1e293b;
+}
+
+.dashboard-sidebar h2 {
+    color: #64748b !important;
+}
+
+.dashboard-sidebar a {
+    color: #475569 !important;
+}
+
+.dashboard-sidebar a:hover {
+    background: rgba(37, 99, 235, 0.05) !important;
+    color: #2563eb !important;
+}
+
+.dashboard-sidebar .active-nav {
+    background: rgba(37, 99, 235, 0.1) !important;
+    color: #2563eb !important;
+    box-shadow: inset 4px 0 0 #2563eb;
+}
+
+.dashboard-sidebar .active-nav svg {
+    color: #2563eb !important;
+}
+
+.dashboard-sidebar img {
+    filter: none;
+}
+
+.dashboard-sidebar .bg-blue-100 {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.dashboard-sidebar .bg-orange-100 {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.dashboard-sidebar .bg-red-50 {
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.dashboard-sidebar .text-red-600 {
+    color: #dc2626 !important;
+}
+
+.dashboard-sidebar .text-red-600:hover {
+    color: #991b1b !important;
+    background: rgba(220, 38, 38, 0.05) !important;
+}
+
+.dashboard-main {
+    flex: 1;
+    background: #fdfdfd;
+    min-width: 0;
+}
+
+/* Animation de rotation */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Animation de pulsation */
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Animation de rebond */
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(-5%);
+        animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+
+    50% {
+        transform: translateY(0);
+        animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+}
+
+/* Animation de grossissement */
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ========== CLASSES UTILITAIRES ========== */
+
+/* Animations appliquées */
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slideUp {
+    animation: slideUp 0.3s ease-out;
+}
+
+.animate-slideInLeft {
+    animation: slideInLeft 0.3s ease-out;
+}
+
+.animate-slideInRight {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-bounce {
+    animation: bounce 1s infinite;
+}
+
+.animate-scaleIn {
+    animation: scaleIn 0.2s ease-out;
+}
+
+/* ========== COMPOSANTS ========== */
+
+/* Modal */
+.modal-overlay {
+    animation: fadeIn var(--transition-base);
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    animation: slideUp var(--transition-slow);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+.modal-header-gradient {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+    border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.info-card {
+    background: #ffffff;
+    border: 1px solid var(--gray-200);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all var(--transition-base);
+}
+
+.info-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-300);
+}
+
+.doc-item {
+    transition: all var(--transition-base);
+    border: 1px solid transparent;
+    border-radius: 12px;
+}
+
+.doc-item.soumis {
+    background: #f0fdf4;
+    border: 1px solid #bcf0da;
+}
+
+.doc-item.manquant {
+    background: #fff5f5;
+    border: 1px solid #feb2b2;
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.05);
+}
+
+.doc-item.manquant:hover {
+    border-color: #f87171;
+    transform: translateX(4px);
+}
+
+.doc-item.soumis:hover {
+    transform: translateX(4px);
+}
+
+/* Cards de statistiques */
+.stat-card {
+    transition: all var(--transition-base);
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-card:active {
+    transform: translateY(-2px);
+}
+
+/* Boutons */
+button {
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+button:not(:disabled):hover {
+    transform: translateY(-1px);
+}
+
+button:not(:disabled):active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    cursor: not-allowed;
+}
+
+/* Effet de ripple sur les boutons */
+button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+button:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Inputs et formulaires */
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: var(--primary-500);
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--primary-600);
+    border-color: var(--primary-600);
+}
+
+/* Progress bars */
+.progress-bar {
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(90deg, currentColor 0%, currentColor 100%);
+}
+
+/* Barre de progression avec effet de brillance */
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    100% {
+        left: 100%;
+    }
+}
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--gray-100);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: 4px;
+    transition: background var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-400);
+}
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    transition: all var(--transition-fast);
+}
+
+.badge:hover {
+    transform: scale(1.05);
+}
+
+/* Avatars */
+.avatar {
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-base);
+}
+
+.avatar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.2) 100%);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.avatar:hover::before {
+    opacity: 1;
+}
+
+.avatar:hover {
+    transform: scale(1.05) rotate(2deg);
+}
+
+/* Tooltips */
 .tooltip {
     position: relative;
 }
 
-.tooltip:hover::after {
+.tooltip::after {
     content: attr(data-tooltip);
     position: absolute;
-    bottom: 100%;
+    bottom: 125%;
     left: 50%;
-    transform: translateX(-50%);
-    padding: 0.5rem;
-    background-color: #1f2937;
+    transform: translateX(-50%) translateY(10px);
+    padding: 0.5rem 0.75rem;
+    background-color: var(--gray-900);
     color: white;
     border-radius: 0.375rem;
     font-size: 0.75rem;
     white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all var(--transition-base);
     z-index: 1000;
 }
 
-/* Print styles */
+.tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%) translateY(5px);
+    border: 5px solid transparent;
+    border-top-color: var(--gray-900);
+    opacity: 0;
+    pointer-events: none;
+    transition: all var(--transition-base);
+    z-index: 1000;
+}
+
+.tooltip:hover::after,
+.tooltip:hover::before {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Lignes du tableau */
+tbody tr {
+    transition: all var(--transition-fast);
+}
+
+tbody tr:hover {
+    background-color: var(--primary-50);
+    transform: translateX(2px);
+}
+
+/* Dropdown menus */
+.dropdown-enter {
+    animation: scaleIn 0.2s ease-out;
+    transform-origin: top;
+}
+
+/* Notifications */
+.notification {
+    animation: slideInRight 0.3s ease-out;
+    transition: all var(--transition-base);
+}
+
+.notification:hover {
+    transform: translateX(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Loading spinner */
+.loading-spinner {
+    border: 3px solid var(--gray-200);
+    border-top: 3px solid var(--primary-600);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+}
+
+/* Skeleton loaders */
+.skeleton {
+    background: linear-gradient(90deg,
+            var(--gray-200) 25%,
+            var(--gray-100) 50%,
+            var(--gray-200) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* États de focus pour l'accessibilité */
+*:focus-visible {
+    outline: 2px solid var(--primary-500);
+    outline-offset: 2px;
+}
+
+/* Transitions de page */
+.page-enter {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.page-leave {
+    animation: fadeIn 0.3s ease-out reverse;
+}
+
+/* Grilles responsives */
+@media (max-width: 768px) {
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+
+    .modal-content {
+        margin: 1rem;
+        max-height: calc(100vh - 2rem);
+    }
+}
+
+/* États hover pour les icônes */
+.icon-hover {
+    transition: all var(--transition-fast);
+}
+
+.icon-hover:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* Cartes avec effet de lueur */
+.card-glow {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-glow::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity var(--transition-slow);
+}
+
+.card-glow:hover::before {
+    opacity: 1;
+}
+
+/* Boutons avec gradient */
+.btn-gradient {
+    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+    background-color: #2563EB !important;
+    /* Fallback */
+    color: white !important;
+    background-size: 200% 200%;
+    transition: all var(--transition-base);
+}
+
+.btn-gradient:hover {
+    background-position: right center;
+    box-shadow: var(--shadow-lg);
+}
+
+/* Styles d'impression */
 @media print {
     .no-print {
         display: none !important;
     }
+
+    body {
+        background: white;
+    }
+
+    .stat-card,
+    .notification {
+        box-shadow: none;
+        border: 1px solid var(--gray-300);
+    }
+}
+
+/* États actifs et sélectionnés */
+.active {
+    background-color: var(--primary-50);
+    color: var(--primary-700);
+    font-weight: 600;
+}
+
+.selected {
+    background-color: var(--primary-100);
+    border-color: var(--primary-500);
+}
+
+/* Indicateurs de chargement */
+.loading-dots span {
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+/* Effet de soulignement animé pour les liens */
+.link-underline {
+    position: relative;
+}
+
+.link-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: currentColor;
+    transition: width var(--transition-base);
+}
+
+.link-underline:hover::after {
+    width: 100%;
+}
+
+/* Cartes avec bordure animée */
+.card-border-animated {
+    position: relative;
+    background: white;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.card-border-animated::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    border-radius: inherit;
+    background: linear-gradient(45deg, var(--primary-500), var(--purple-500), var(--primary-500));
+    background-size: 200% 200%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity var(--transition-base);
+    animation: shimmer 3s linear infinite;
+}
+
+.card-border-animated:hover::before {
+    opacity: 1;
+}
+
+/* Thème sombre (optionnel pour le futur) */
+@media (prefers-color-scheme: dark) {
+    /* Variables pour thème sombre - à activer si nécessaire */
+    /* :root {
+        --bg-primary: var(--gray-900);
+        --bg-secondary: var(--gray-800);
+        --text-primary: var(--gray-100);
+        --text-secondary: var(--gray-400);
+    } */
 }

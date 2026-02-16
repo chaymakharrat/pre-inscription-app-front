@@ -7,6 +7,8 @@ import { ScolariteDashboardComponent } from './components/dashboard-scolarite/da
 
 import { HomeComponent } from './components/home/home.component';
 import { DashboardAdminComponent } from './components/dashboard-admin/dashboard-admin.component';
+import { StatistiquesComponent } from './components/statistiques/statistiques.component';
+import { NotificationsComponent } from './components/notifications/notifications.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -15,5 +17,7 @@ export const routes: Routes = [
     { path: 'dashboard-scolarite', component: ScolariteDashboardComponent, canActivate: [authGuard], data: { roles: ['AGENT_SCOLARITE'] } },
     { path: 'dashboard-enseignant-responsable', component: DashboardEnseigantResponsableComponent, canActivate: [authGuard], data: { roles: ['ENSEIGNANT_RESPONSABLE'] } },
     { path: 'dashboard-admin', component: DashboardAdminComponent, canActivate: [authGuard], data: { roles: ['ADMIN'] } },
+    { path: 'statistiques', component: StatistiquesComponent },
+    { path: 'notifications', component: NotificationsComponent },
     { path: '**', redirectTo: '' }
 ];

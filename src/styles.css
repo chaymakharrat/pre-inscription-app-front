@@ -11,6 +11,18 @@
   --bg-light: #f4f7f6;
   --border-color: #e0e0e0;
 
+  /* Dashboard / Faculty design tokens */
+  --admin-bg: #f8fafc;
+  --admin-card-bg: #ffffff;
+  --admin-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --admin-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --admin-sidebar-bg: #ffffff;
+  --admin-sidebar-border: #e8eef4;
+  --admin-header-border: #e8eef4;
+  --admin-table-header: #f1f5f9;
+  --admin-radius: 12px;
+  --admin-radius-sm: 8px;
+
   /* Animation timing */
   --transition-fast: 150ms;
   --transition-base: 300ms;
@@ -21,9 +33,103 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', 'Segoe UI', 'Source Sans 3', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-light);
   color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== Shared dashboard layout (faculty style) ===== */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--admin-bg);
+}
+
+.dashboard-sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: var(--admin-sidebar-bg);
+  border-right: 1px solid var(--admin-sidebar-border);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 1px 0 0 rgba(13, 71, 161, 0.04);
+}
+
+.dashboard-main {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  background: var(--admin-card-bg);
+  border-bottom: 1px solid var(--admin-header-border);
+  padding: 1.5rem 2rem;
+}
+
+.dashboard-card {
+  background: var(--admin-card-bg);
+  border-radius: var(--admin-radius);
+  border: 1px solid var(--admin-sidebar-border);
+  box-shadow: var(--admin-card-shadow);
+  transition: box-shadow var(--transition-base) var(--ease-smooth);
+}
+
+.dashboard-card:hover {
+  box-shadow: var(--admin-card-shadow-hover);
+}
+
+.admin-stat-card {
+  background: var(--admin-card-bg);
+  border-radius: var(--admin-radius);
+  border: 1px solid var(--admin-sidebar-border);
+  padding: 1.5rem;
+  box-shadow: var(--admin-card-shadow);
+  transition: transform var(--transition-base) var(--ease-smooth), box-shadow var(--transition-base) var(--ease-smooth);
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--admin-card-shadow-hover);
+}
+
+.admin-table-wrapper {
+  background: var(--admin-card-bg);
+  border-radius: var(--admin-radius);
+  border: 1px solid var(--admin-sidebar-border);
+  overflow: hidden;
+  box-shadow: var(--admin-card-shadow);
+}
+
+.admin-table thead {
+  background: var(--admin-table-header);
+  border-bottom: 1px solid var(--admin-sidebar-border);
+}
+
+.admin-table th {
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #64748b;
+  padding: 1rem 1.5rem;
+  text-align: left;
+}
+
+.admin-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color var(--transition-fast);
+}
+
+.admin-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.admin-table td {
+  padding: 1rem 1.5rem;
+  font-size: 0.875rem;
 }
 
 * {

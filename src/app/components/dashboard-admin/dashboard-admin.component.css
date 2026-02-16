@@ -1,216 +1,49 @@
-/* Dashboard Ultra-Moderne - Innovation Design */
-
-/* ===== VARIABLES CSS ===== */
-:root {
-    --primary-blue: #3B82F6;
-    --primary-purple: #8B5CF6;
-    --success-green: #10B981;
-    --warning-orange: #F97316;
-    --danger-red: #EF4444;
-    --glass-bg: rgba(255, 255, 255, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.3);
-}
-
-/* ===== GLASSMORPHISM ===== */
-.glass-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-}
-
-/* ===== SIDEBAR NAVIGATION ===== */
-.nav-item {
-    position: relative;
-    overflow: hidden;
-}
-
-.nav-item.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
-
-.nav-item:not(.active) {
-    color: #64748b;
-}
-
-.nav-item:not(.active):hover {
-    background: #f1f5f9;
-    color: #334155;
-}
-
-.nav-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s;
-}
-
-.nav-item:hover::before {
-    left: 100%;
-}
-
-/* ===== STATS CARDS COMPACT ===== */
-.stat-card-compact {
-    position: relative;
+/* Dashboard Admin - Style faculté / administration (iTech) */
+/* ===== AMÉLIORATION 1 : Cartes statistiques animées ===== */
+.stat-card {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
 }
 
-.stat-card-compact::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
-    opacity: 0;
-    transition: opacity 0.3s;
-    border-radius: 1rem;
-    pointer-events: none;
-}
-
-.stat-card-compact:hover::before {
-    opacity: 1;
-}
-
-.stat-card-compact:hover {
+.stat-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
-/* ===== KANBAN BOARD ===== */
-.kanban-board {
-    height: calc(100vh - 300px);
+/* ===== AMÉLIORATION 2 : Badges de statut améliorés ===== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
 }
 
-.kanban-column {
-    display: flex;
-    flex-direction: column;
-    min-height: 200px;
+.status-badge:hover {
+    transform: scale(1.05);
 }
 
-.kanban-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: grab;
+/* ===== AMÉLIORATION 3 : Effet hover sur les lignes du tableau ===== */
+.admin-table tbody tr {
+    transition: all 0.15s ease;
 }
 
-.kanban-card:active {
-    cursor: grabbing;
+.admin-table tbody tr:hover {
+    background-color: #f8fafc;
+    transform: translateX(4px);
+    box-shadow: -4px 0 0 #3b82f6 inset;
 }
 
-.kanban-card:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-
-/* Animation d'ajout de carte */
-@keyframes cardSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.9);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.kanban-card {
-    animation: cardSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* ===== COMMAND PALETTE ===== */
-.modal-overlay {
-    animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-/* ===== FINALIZATION SUCCESS ANIMATION ===== */
-@keyframes successCheckmark {
-    0% {
-        transform: scale(0) rotate(0deg);
-        opacity: 0;
-    }
-
-    50% {
-        transform: scale(1.2) rotate(180deg);
-        opacity: 1;
-    }
-
-    100% {
-        transform: scale(1) rotate(360deg);
-        opacity: 1;
-    }
-}
-
-.success-checkmark {
-    animation: successCheckmark 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-/* Animation de ligne qui se transforme en checkmark */
-@keyframes rowToCheckmark {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-    }
-
-    50% {
-        transform: scale(1.1);
-        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-    }
-
-    100% {
-        transform: scale(0.5) translateY(-50px);
-        opacity: 0;
-    }
-}
-
-.finalizing-row {
-    animation: rowToCheckmark 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-}
-
-/* ===== PROGRESS BAR ANIMÉE ===== */
-@keyframes progressGlow {
-
-    0%,
-    100% {
-        box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
-    }
-
-    50% {
-        box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
-    }
-}
-
-.progress-bar-glow {
-    animation: progressGlow 2s ease-in-out infinite;
-}
-
-/* ===== MICRO-INTERACTIONS ===== */
-/* Bouton avec effet ripple */
-.ripple-button {
+/* ===== AMÉLIORATION 4 : Boutons avec effet ripple ===== */
+button {
     position: relative;
     overflow: hidden;
+    transition: all 0.2s ease;
 }
 
-.ripple-button::after {
+button::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -218,424 +51,219 @@
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.3);
     transform: translate(-50%, -50%);
     transition: width 0.6s, height 0.6s;
 }
 
-.ripple-button:active::after {
+button:active::before {
     width: 300px;
     height: 300px;
 }
 
-/* ===== INSIGHT CARD PULSE ===== */
-@keyframes insightPulse {
-
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
-    }
-
-    50% {
-        box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
-    }
-}
-
-.glass-card {
-    animation: insightPulse 2s infinite;
-}
-
-/* ===== SCROLLBAR CUSTOM ===== */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: rgba(241, 245, 249, 0.5);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #94a3b8 0%, #64748b 100%);
-    border-radius: 10px;
-    transition: background 0.3s;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #64748b 0%, #475569 100%);
-}
-
-/* ===== FLOATING ACTION BUTTON ===== */
-.fab {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* ===== AMÉLIORATION 5 : Graphique de distribution amélioré ===== */
+.distribution-bar {
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 40;
 }
 
-.fab:hover {
-    transform: scale(1.1) rotate(90deg);
-    box-shadow: 0 12px 24px rgba(102, 126, 234, 0.6);
+.distribution-bar:hover {
+    transform: scaleY(1.05);
+    filter: brightness(1.1);
 }
 
-/* ===== TOOLTIP MODERNE ===== */
-[data-tooltip] {
-    position: relative;
-}
-
-[data-tooltip]::before {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-8px);
-    padding: 8px 12px;
-    background: rgba(30, 41, 59, 0.95);
-    backdrop-filter: blur(10px);
-    color: white;
-    font-size: 12px;
-    font-weight: 500;
-    border-radius: 8px;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1000;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-[data-tooltip]::after {
+.distribution-bar::after {
     content: '';
     position: absolute;
-    bottom: 115%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-top: 6px solid rgba(30, 41, 59, 0.95);
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-[data-tooltip]:hover::before,
-[data-tooltip]:hover::after {
-    opacity: 1;
-    transform: translateX(-50%) translateY(-4px);
-}
-
-/* ===== SKELETON LOADING ===== */
-@keyframes shimmer {
-    0% {
-        background-position: -1000px 0;
-    }
-
-    100% {
-        background-position: 1000px 0;
-    }
-}
-
-.skeleton {
-    background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
-    background-size: 1000px 100%;
-    animation: shimmer 2s infinite linear;
-    border-radius: 8px;
-}
-
-/* ===== STATUS BADGES ===== */
-.status-badge {
-    position: relative;
-    overflow: hidden;
-}
-
-.status-badge::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
+    bottom: 0;
+    left: 0;
+    right: 0;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-    transition: left 0.5s;
+    background: linear-gradient(to top, rgba(59, 130, 246, 0.8), rgba(59, 130, 246, 0.2));
+    border-radius: 0.5rem 0.5rem 0 0;
 }
 
-.status-badge:hover::before {
-    left: 100%;
+/* ===== AMÉLIORATION 6 : Skeleton loaders (pendant le chargement) ===== */
+.skeleton {
+    background: linear-gradient(90deg, 
+        #e5e7eb 25%, 
+        #f3f4f6 50%, 
+        #e5e7eb 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 0.5rem;
 }
 
-/* ===== EMPTY STATE ===== */
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem 2rem;
-    text-align: center;
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }
 
-.empty-state-icon {
-    width: 120px;
-    height: 120px;
-    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 2rem;
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-20px);
-    }
-}
-
-/* ===== NOTIFICATION TOAST ===== */
-@keyframes slideInRight {
-    from {
-        transform: translateX(400px);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-.toast {
-    position: fixed;
-    top: 2rem;
-    right: 2rem;
-    min-width: 320px;
-    padding: 1rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1000;
-}
-
-/* ===== DRAG AND DROP INDICATORS ===== */
-.drag-over {
-    background: rgba(59, 130, 246, 0.1);
-    border: 2px dashed #3B82F6;
-}
-
-.dragging {
-    opacity: 0.5;
-    cursor: grabbing;
-}
-
-/* ===== FOCUS STATES AMÉLIORÉS ===== */
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-    outline: 2px solid #3B82F6;
-    outline-offset: 2px;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* ===== LOADING SPINNER ===== */
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
+/* ===== AMÉLIORATION 7 : Indicateur de chargement du bouton "Actualiser" ===== */
 .animate-spin {
     animation: spin 1s linear infinite;
 }
 
-.animate-spin-slow {
-    animation: spin 3s linear infinite;
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-/* ===== PULSE ANIMATION ===== */
-@keyframes pulse {
+/* ===== AMÉLIORATION 8 : Badge avec pulse animation ===== */
+.badge-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
 
-    0%,
-    100% {
+@keyframes pulse {
+    0%, 100% {
         opacity: 1;
     }
-
     50% {
         opacity: 0.5;
     }
 }
 
-.animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+/* ===== AMÉLIORATION 9 : Input de recherche avec focus amélioré ===== */
+input[type="text"]:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    transform: scale(1.01);
 }
 
-/* ===== BOUNCE ANIMATION ===== */
-@keyframes bounce {
+/* ===== AMÉLIORATION 10 : Notification toast (pour les alertes) ===== */
+.toast {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    animation: slideInRight 0.3s ease-out;
+    z-index: 9999;
+}
 
-    0%,
-    100% {
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ===== AMÉLIORATION 11 : Backdrop blur pour le modal ===== */
+.modal-overlay {
+    backdrop-filter: blur(4px);
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* ===== AMÉLIORATION 12 : Effet de bordure animée pour les cartes actives ===== */
+.card-active {
+    position: relative;
+    background: white;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.card-active::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    border-radius: inherit;
+    background: linear-gradient(45deg, #3b82f6, #8b5cf6, #3b82f6);
+    background-size: 200% 200%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: shimmer 3s linear infinite;
+}
+/* ===== VARIABLES (couleurs existantes) ===== */
+:host {
+    --primary-blue: #0d47a1;
+    --primary-blue-light: #1565c0;
+    --success-green: #0d9488;
+    --warning-orange: #ea580c;
+    --danger-red: #dc2626;
+}
+
+/* ===== SIDEBAR ===== */
+.dashboard-sidebar nav a {
+    position: relative;
+    border-radius: var(--admin-radius-sm, 8px);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dashboard-sidebar nav a:hover {
+    background: #f1f5f9;
+}
+
+/* ===== STATS CARDS ===== */
+.stat-card {
+    position: relative;
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
         transform: translateY(0);
     }
-
-    50% {
-        transform: translateY(-10px);
-    }
 }
 
-.animate-bounce {
-    animation: bounce 1s infinite;
+/* ===== SCROLLBAR ===== */
+:host ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
 }
 
-/* ===== GRADIENT TEXT ===== */
-.gradient-text {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+:host ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 1024px) {
-    .kanban-board {
-        overflow-x: auto;
-    }
-
-    .kanban-board .grid {
-        min-width: 1200px;
-    }
+:host ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
 }
 
-@media (max-width: 768px) {
-    aside {
-        width: 20px !important;
-    }
-
-    aside:hover {
-        width: 280px !important;
-    }
-
-    .stat-card-compact {
-        font-size: 0.875rem;
-    }
-
-    .fab {
-        bottom: 1rem;
-        right: 1rem;
-        width: 48px;
-        height: 48px;
-    }
+:host ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
-/* ===== PRINT STYLES ===== */
-@media print {
-
-    .no-print,
-    aside,
-    .fab,
-    button {
-        display: none !important;
-    }
-
-    .kanban-card,
-    .stat-card-compact {
-        break-inside: avoid;
-        page-break-inside: avoid;
-    }
-
-    body {
-        background: white !important;
-    }
-}
-
-/* ===== DARK MODE READY ===== */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --glass-bg: rgba(30, 41, 59, 0.8);
-        --glass-border: rgba(255, 255, 255, 0.1);
-    }
-}
-
-/* ===== ACCESSIBILITY ===== */
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-}
-
-/* ===== HIGH CONTRAST MODE ===== */
-@media (prefers-contrast: high) {
-    .glass-card {
-        background: white;
-        border: 2px solid black;
-    }
-
-    .nav-item.active {
-        background: black;
-        color: white;
-    }
+/* ===== FOCUS & ACCESSIBILITY ===== */
+:host button:focus-visible,
+:host input:focus-visible {
+    outline: 2px solid var(--primary-blue);
+    outline-offset: 2px;
 }
 
 /* ===== REDUCED MOTION ===== */
 @media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
+    :host * {
         animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-
-/* ===== CUSTOM SELECTION ===== */
-::selection {
-    background: rgba(59, 130, 246, 0.3);
-    color: inherit;
-}
-
-::-moz-selection {
-    background: rgba(59, 130, 246, 0.3);
-    color: inherit;
-}
-
-/* ===== SMOOTH SCROLL ===== */
-html {
-    scroll-behavior: smooth;
-}
-
-/* ===== BACKDROP BLUR FALLBACK ===== */
-@supports not (backdrop-filter: blur(20px)) {
-
-    .glass-card,
-    .backdrop-blur-xl {
-        background: rgba(255, 255, 255, 0.95);
+        transition-duration: 0.05s !important;
     }
 }
