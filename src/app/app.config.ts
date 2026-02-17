@@ -14,7 +14,7 @@ function initializeKeycloak(keycloak: KeycloakService) {
         clientId: 'inscription-front-angular',
       },
       initOptions: {
-        onLoad: 'login-required',
+        onLoad: 'check-sso',
         checkLoginIframe: false,
       },
       enableBearerInterceptor: true,

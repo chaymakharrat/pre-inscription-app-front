@@ -1,259 +1,540 @@
-<div class="dashboard-layout">
-    <!-- Sidebar Navigation -->
-    <aside class="dashboard-sidebar">
-        <div class="p-6 flex flex-col h-full">
-            <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4">Administration</h2>
-
-            <!-- Menu Items -->
-            <nav class="space-y-2">
-                <a (click)="setFilter('tous')"
-                    [class]="currentFilter === 'tous' ? 'flex items-center px-4 py-2 text-blue-600 bg-blue-50 rounded-lg cursor-pointer' : 'flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer'">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                    Vue d'ensemble
-                </a>
-
-                <a (click)="setFilter('attente')"
-                    [class]="currentFilter === 'attente' ? 'flex items-center px-4 py-2 text-blue-600 bg-blue-50 rounded-lg cursor-pointer' : 'flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer'">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Dossiers en attente
-                    <span
-                        class="ml-auto bg-blue-600 text-white text-xs rounded-full px-2 py-1">{{stats.demandesEnAttente}}</span>
-                </a>
-
-                <a (click)="setFilter('payment_valid')"
-                    [class]="currentFilter === 'payment_valid' ? 'flex items-center px-4 py-2 text-blue-600 bg-blue-50 rounded-lg cursor-pointer' : 'flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer'">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    Paiements validés
-                </a>
-
-                <a (click)="setFilter('rejetes')"
-                    [class]="currentFilter === 'rejetes' ? 'flex items-center px-4 py-2 text-blue-600 bg-blue-50 rounded-lg cursor-pointer' : 'flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer'">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
-                    Dossiers rejetés
-                </a>
-            </nav>
-
-            <!-- Paramètres -->
-            <div class="mt-auto pt-8">
-                <a (click)="logout()"
-                    class="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg cursor-pointer">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Déconnexion
-                </a>
+<div class="main-content-scroll overflow-y-auto h-full animate-fadeIn">
+    <!-- Header avec Glassmorphism (Sync Parity) -->
+    <header class="dashboard-header sticky top-0 z-30">
+        <div>
+            <h1 class="text-2xl font-extrabold text-[#0f1117] tracking-tight flex items-center gap-3">
+                Tableau de bord Admin
+                <span
+                    class="flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#eff4ff] text-[#2563eb] border border-[#dbe6ff] uppercase tracking-wider">
+                    Live
+                </span>
+            </h1>
+            <div class="flex items-center mt-1.5 gap-2">
+                <div class="w-1.5 h-1.5 rounded-full bg-[#2563eb] animate-pulse"></div>
+                <p class="text-[11px] font-semibold text-[#8b92a9] uppercase tracking-wider">
+                    Supervision Globale • État du système en direct
+                </p>
             </div>
         </div>
-    </aside>
 
-    <!-- Main Content -->
-    <main class="dashboard-main">
-        <!-- Header -->
-        <div class="dashboard-header">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Tableau de bord Admin</h1>
-                    <p class="text-gray-500 mt-1 text-sm">Supervision globale et finalisation des comptes</p>
+        <div class="flex items-center gap-8">
+            <!-- Actions rapides -->
+            <div class="flex items-center bg-[#f1f3f9]/50 p-1 rounded-xl border border-[#e8eaf0]/50">
+                <button (click)="exportToExcel()"
+                    class="px-4 py-2 text-xs font-bold text-[#4a5068] hover:bg-white hover:shadow-sm rounded-lg transition-all flex items-center group">
+                    <svg class="w-4 h-4 mr-2 text-[#8b92a9] group-hover:text-[#2563eb] transition-colors" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Exporter
+                </button>
+            </div>
+
+            <!-- Profil Utilisateur Dynamique (Sync Parity) -->
+            <div class="flex items-center pl-8 border-l border-[#e8eaf0] h-10">
+                <div class="text-right mr-4">
+                    <p class="text-sm font-extrabold text-[#0f1117] leading-none">
+                        {{userProfile?.firstName}} {{userProfile?.lastName}}
+                    </p>
+                    <p
+                        class="text-[10px] font-bold text-[#2563eb] uppercase tracking-widest mt-1.5 flex items-center justify-end gap-1">
+                        <span class="w-1 h-1 rounded-full bg-[#2563eb]"></span>
+                        {{getDisplayRole()}}
+                    </p>
                 </div>
-                <div class="flex items-center space-x-3">
-                    <button (click)="exportToExcel()"
-                        class="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="relative group cursor-pointer">
+                    <div
+                        class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#2563eb] to-[#60a5fa] p-0.5 shadow-lg shadow-blue-100 group-hover:scale-105 transition-transform duration-300">
+                        <div
+                            class="w-full h-full rounded-[14px] bg-white flex items-center justify-center text-[#2563eb] font-black text-xs">
+                            {{getProfileInitials()}}
+                        </div>
+                    </div>
+                    <div
+                        class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-[#059669] border-2 border-white rounded-full">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Stats Section (Full Parity) -->
+    <div class="px-8 py-6 animate-slideUp">
+        <!-- Indicateur de tendance global -->
+        <div
+            class="mb-6 p-4 bg-[#eff4ff] border-l-4 border-[#2563eb] rounded-xl flex items-center justify-between shadow-sm animate-fadeIn">
+            <div class="flex items-center">
+                <div class="p-2 bg-[#dbe6ff] rounded-lg mr-4">
+                    <svg class="w-5 h-5 text-[#2563eb]" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-[#0f1117]">Surveillance de l'activité</p>
+                    <p class="text-xs text-[#4a5068] font-medium">Analyse globale des flux d'inscriptions et des
+                        validations</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span
+                    class="text-xs font-bold text-[#2563eb] bg-white px-3 py-1 rounded-full border border-[#dbe6ff] shadow-sm">
+                    Tendance Stable
+                </span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Total Inscriptions -->
+            <div class="stat-card group">
+                <div class="flex items-center justify-between mb-4">
+                    <div
+                        class="p-3 bg-gradient-to-br from-[#eff4ff] to-[#dbe6ff] rounded-xl group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-[#2563eb]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 4h16v4H4V4zm0 6h16v10H4V10zm4 3l4 4 4-4" />
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
-                        Exporter
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <span class="text-[10px] font-bold text-[#8b92a9] uppercase tracking-widest mb-1">Global</span>
+                        <span
+                            class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold bg-[#eff4ff] text-[#2563eb] border border-[#dbe6ff]">
+                            Volume Total
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <h3
+                        class="text-4xl font-extrabold text-[#0f1117] mb-1 group-hover:text-[#2563eb] transition-colors">
+                        {{stats.totalInscriptions}}
+                    </h3>
+                    <p class="text-sm text-[#4a5068] font-bold uppercase tracking-tighter">Total Inscriptions</p>
+                    <div class="mt-4 h-1.5 bg-[#f1f3f9] rounded-full overflow-hidden">
+                        <div class="h-full bg-[#2563eb] rounded-full w-full opacity-30"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- En attente -->
+            <div class="stat-card group">
+                <div class="flex items-center justify-between mb-4">
+                    <div
+                        class="p-3 bg-gradient-to-br from-[#fffbeb] to-[#ffedd5] rounded-xl group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-[#d97706]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <span class="text-[10px] font-bold text-[#8b92a9] uppercase tracking-widest mb-1">Action</span>
+                        <span
+                            class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold bg-[#fffbeb] text-[#d97706] border border-[#ffedd5] transition-colors group-hover:bg-[#d97706] group-hover:text-white">
+                            A traiter
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <h3
+                        class="text-4xl font-extrabold text-[#0f1117] mb-1 group-hover:text-[#d97706] transition-colors">
+                        {{stats.demandesEnAttente}}
+                    </h3>
+                    <p class="text-sm text-[#4a5068] font-bold uppercase tracking-tighter">Dossiers en attente</p>
+                    <div class="mt-4 h-1.5 bg-[#f1f3f9] rounded-full overflow-hidden">
+                        <div class="h-full bg-[#d97706] rounded-full transition-all duration-1000"
+                            [style.width.%]="(stats.demandesEnAttente / stats.totalInscriptions) * 100">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paiements validés -->
+            <div class="stat-card group">
+                <div class="flex items-center justify-between mb-4">
+                    <div
+                        class="p-3 bg-gradient-to-br from-[#ecfdf5] to-[#d1fae5] rounded-xl group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <span class="text-[10px] font-bold text-[#8b92a9] uppercase tracking-widest mb-1">Succès</span>
+                        <span
+                            class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold bg-[#ecfdf5] text-[#059669] border border-[#d1fae5]">
+                            Prêt/Final
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <h3
+                        class="text-4xl font-extrabold text-[#0f1117] mb-1 group-hover:text-[#059669] transition-colors">
+                        {{stats.paiementsValides}}
+                    </h3>
+                    <p class="text-sm text-[#4a5068] font-bold uppercase tracking-tighter">Paiements validés</p>
+                    <div class="mt-4 h-1.5 bg-[#f1f3f9] rounded-full overflow-hidden">
+                        <div class="h-full bg-[#059669] rounded-full transition-all duration-1000"
+                            [style.width.%]="(stats.paiementsValides / stats.totalInscriptions) * 100">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inscrits définitifs -->
+            <div class="stat-card group">
+                <div class="flex items-center justify-between mb-4">
+                    <div
+                        class="p-3 bg-gradient-to-br from-[#f5f3ff] to-[#e9d5ff] rounded-xl group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-[#7c3aed]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <span
+                            class="text-[10px] font-bold text-[#8b92a9] uppercase tracking-widest mb-1">Finalisé</span>
+                        <span
+                            class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold bg-[#f5f3ff] text-[#7c3aed] border border-[#e9d5ff]">
+                            Comptes OK
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <h3
+                        class="text-4xl font-extrabold text-[#0f1117] mb-1 group-hover:text-[#7c3aed] transition-colors">
+                        {{stats.inscritsDefinitifs}}
+                    </h3>
+                    <p class="text-sm text-[#4a5068] font-bold uppercase tracking-tighter">Inscrits définitifs</p>
+                    <div class="mt-4 h-1.5 bg-[#f1f3f9] rounded-full overflow-hidden">
+                        <div class="h-full bg-[#7c3aed] rounded-full transition-all duration-1000"
+                            [style.width.%]="(stats.inscritsDefinitifs / stats.totalInscriptions) * 100">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Distribution Chart (Fixed & Enhanced) -->
+    <div class="px-8 mb-10 animate-slideUp">
+        <div class="bg-[var(--surface)] rounded-2xl shadow-sm border border-[var(--border)] p-8">
+            <div class="flex items-center justify-between mb-12">
+                <div>
+                    <h2 class="text-xl font-extrabold text-[#0f1117] tracking-tight">Distribution des Dossiers</h2>
+                    <p class="text-[10px] text-[#8b92a9] font-bold uppercase tracking-widest mt-1">Répartition
+                        analytique
+                        par étape</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button *ngIf="currentFilter !== 'tous'" (click)="setFilter('tous')"
+                        class="px-2 py-1 bg-[#f1f3f9] text-[#4a5068] text-[10px] font-bold rounded-lg border border-[#e8eaf0] hover:bg-white hover:text-[#2563eb] transition-all flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Réinitialiser
                     </button>
-                    <button (click)="refreshData()"
-                        class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                        <svg class="w-5 h-5 mr-2" [class.animate-spin]="loading" fill="none" stroke="currentColor"
+                    <span
+                        class="px-3 py-1 bg-[#eff4ff] text-[#2563eb] text-[10px] font-bold rounded-full border border-[#dbe6ff]">Live
+                        Analytics</span>
+                </div>
+            </div>
+
+            <div class="h-64 relative mt-4">
+                <!-- Chart Grid Lines -->
+                <div class="absolute inset-x-0 bottom-0 h-[75%] border-t border-gray-50 flex flex-col justify-between">
+                    <div class="w-full border-t border-gray-50"></div>
+                    <div class="w-full border-t border-gray-50"></div>
+                    <div class="w-full border-t border-gray-100"></div>
+                </div>
+
+                <!-- Bars Container (Centred and narrow) -->
+                <div class="max-w-5xl mx-auto flex items-end justify-center gap-12 h-full relative px-8">
+                    <div *ngFor="let s of distribution; let i = index" (click)="onChartBarClick(s.status)"
+                        class="flex flex-col items-center h-full relative group cursor-pointer w-24">
+
+                        <!-- Bar and its dynamic label -->
+                        <div class="w-full flex flex-col items-center justify-end h-full relative">
+                            <!-- Value Label -->
+                            <div class="mb-3 flex flex-col items-center group-hover:-translate-y-1 transition-transform"
+                                [style.margin-bottom.px]="5" [class.text-[#2563eb]]="currentFilter === s.status">
+                                <span class="text-base font-black leading-none"
+                                    [class.text-[#1d4ed8]]="currentFilter === s.status">{{s.count}}</span>
+                                <span class="text-[9px] font-black uppercase tracking-tighter mt-1"
+                                    [class.text-[#2563eb]]="currentFilter === s.status">{{getDistributionLabel(s.status)}}</span>
+                            </div>
+
+                            <!-- The Animated Bar -->
+                            <div [style.height.%]="getDistributionPercentage(s.count) || 3"
+                                [style.background]="getDistributionColor(s.status)"
+                                class="w-12 rounded-t-xl transition-all duration-700 shadow-sm group-hover:shadow-md relative overflow-hidden group-hover:scale-x-110"
+                                [class.ring-4]="currentFilter === s.status"
+                                [class.ring-blue-100]="currentFilter === s.status">
+                                <!-- Glass effect -->
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-20">
+                                </div>
+                                <div class="absolute inset-x-0 top-0 h-1 bg-white/30"></div>
+                            </div>
+                        </div>
+
+                        <!-- Bottom Label (Muted) -->
+                        <div class="absolute -bottom-10 w-full flex justify-center">
+                            <span class="text-[10px] font-bold text-center line-clamp-1 truncate w-full"
+                                [class.text-[#2563eb]]="currentFilter === s.status"
+                                [class.text-[#8b92a9]]="currentFilter !== s.status">
+                                {{s.status}}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="px-8 pb-8 animate-slideUp">
+        <div class="admin-table-container">
+            <!-- Search Bar -->
+            <div class="p-6 border-b border-[#e8eaf0] flex items-center justify-between">
+                <div class="flex items-center flex-1 max-w-2xl space-x-4">
+                    <div class="flex-1 relative">
+                        <svg class="absolute left-3 top-3 w-5 h-5 text-[#8b92a9]" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
-                        Actualiser
+                        <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()"
+                            placeholder="Rechercher par nom, email, ID..."
+                            class="w-full pl-10 pr-4 py-2 border border-[#d1d5e0] rounded-lg focus:ring-2 focus:ring-[#2563eb] focus:border-transparent outline-none transition-all" />
+                    </div>
+                </div>
+
+                <!-- View Toggle (Synced with Design) -->
+                <div class="flex items-center bg-[#f1f3f9] p-1 rounded-xl border border-[#e8eaf0]">
+                    <button class="p-2 rounded-lg transition-all" [class.bg-white]="viewMode === 'list'"
+                        [class.shadow-sm]="viewMode === 'list'" [class.text-[#2563eb]]="viewMode === 'list'"
+                        [class.text-[#8b92a9]]="viewMode !== 'list'" (click)="viewMode = 'list'" title="Vue liste">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <button class="p-2 rounded-lg transition-all" [class.bg-white]="viewMode === 'grid'"
+                        [class.shadow-sm]="viewMode === 'grid'" [class.text-[#2563eb]]="viewMode === 'grid'"
+                        [class.text-[#8b92a9]]="viewMode !== 'grid'" (click)="viewMode = 'grid'" title="Vue grille">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <!-- Loading State -->
+            <div *ngIf="loading" class="p-8 text-center">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563eb]"></div>
+                <p class="mt-2 text-[#4a5068] font-medium">Récupération des données...</p>
+            </div>
+
+            <!-- Table View -->
+            <div *ngIf="!loading && viewMode === 'list'" class="overflow-x-auto">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ÉTUDIANT</th>
+                            <th>FORMATION</th>
+                            <th>STATUT</th>
+                            <th>DATE</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[var(--border)]">
+                        <tr *ngFor="let d of demandes; let i = index" (click)="openDetails(d)">
+                            <td class="text-[#2563eb] font-bold text-sm">#{{d.id}}</td>
+                            <td>
+                                <div class="flex items-center">
+                                    <div [style.background]="getAvatarColor(i)"
+                                        class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm transition-transform group-hover:scale-110">
+                                        {{getInitials(d.student?.nom || '', d.student?.prenom || '')}}
+                                    </div>
+                                    <div class="ml-4">
+                                        <div
+                                            class="text-sm font-bold text-[#0f1117] group-hover:text-[#2563eb] transition-colors">
+                                            {{d.student?.nom}} {{d.student?.prenom}}
+                                        </div>
+                                        <div class="text-xs text-[#8b92a9]">{{d.student?.email}}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-sm font-medium text-[#4a5068]">{{d.diplomeDemande}}</div>
+                                <div class="text-[10px] text-[#8b92a9] font-bold uppercase tracking-widest mt-0.5">
+                                    Licence 1</div>
+                            </td>
+                            <td>
+                                <span class="status-badge" [ngClass]="{
+                                            'bg-[#fffbeb] text-[#d97706] border border-[#ffedd5]': d.statut && ['SOUMIS', 'EN_COURS_SCOLARITE', 'EN_COURS_DEPARTEMENT'].includes(d.statut),
+                                            'bg-[#ecfdf5] text-[#059669] border border-[#d1fae5]': d.statut === 'INSCRIT' || d.statut === 'PAIMENT_VALID',
+                                            'bg-[#fef2f2] text-[#dc2626] border border-[#fee2e2]': !!d.statut?.startsWith('REJETE'),
+                                            'bg-[#f5f3ff] text-[#7c3aed] border border-[#e9d5ff]': d.statut === 'INSCRIT'
+                                        }">
+                                    <span class="w-1.5 h-1.5 rounded-full" [ngClass]="{
+                                        'bg-[#d97706]': d.statut && ['SOUMIS', 'EN_COURS_SCOLARITE', 'EN_COURS_DEPARTEMENT'].includes(d.statut),
+                                        'bg-[#059669]': d.statut === 'INSCRIT' || d.statut === 'PAIMENT_VALID',
+                                        'bg-[#dc2626]': !!d.statut?.startsWith('REJETE'),
+                                        'bg-[#7c3aed]': d.statut === 'INSCRIT'
+                                    }"></span>
+                                    {{d.statut}}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="text-sm font-medium text-[#4a5068]">{{d.dateCreation | date:'dd/MM/yyyy'}}
+                                </div>
+                                <div class="text-[10px] text-[#8b92a9] font-bold mt-0.5">{{d.dateCreation |
+                                    date:'HH:mm'}}</div>
+                            </td>
+                            <td>
+                                <div class="flex items-center space-x-2">
+                                    <button *ngIf="d.statut === 'PAIMENT_VALID'"
+                                        (click)="$event.stopPropagation(); finalize(d.id)"
+                                        class="px-3 py-1.5 bg-[#059669] text-white text-xs rounded-lg hover:bg-[#047857] transition-all font-bold shadow-sm shadow-green-100">
+                                        Finaliser
+                                    </button>
+                                    <button (click)="$event.stopPropagation(); openDetails(d)"
+                                        class="p-2 text-[#8b92a9] hover:text-[#2563eb] hover:bg-[#eff4ff] rounded-lg transition-all">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Empty State -->
+                        <tr *ngIf="demandes.length === 0">
+                            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <p class="text-sm">Aucun dossier trouvé</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Grid View -->
+            <div *ngIf="!loading && viewMode === 'grid'" class="p-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div *ngFor="let d of demandes; let i = index" (click)="openDetails(d)"
+                        class="bg-white border border-[#e8eaf0] rounded-2xl p-5 hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer group">
+                        <div class="flex items-start justify-between mb-4">
+                            <div [style.background]="getAvatarColor(i)"
+                                class="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                                {{getInitials(d.student?.nom || '', d.student?.prenom || '')}}
+                            </div>
+                            <span class="status-badge py-1 px-2 text-[9px]" [ngClass]="{
+                                    'bg-[#fffbeb] text-[#d97706] border border-[#ffedd5]': d.statut && ['SOUMIS', 'EN_COURS_SCOLARITE', 'EN_COURS_DEPARTEMENT'].includes(d.statut),
+                                    'bg-[#ecfdf5] text-[#059669] border border-[#d1fae5]': d.statut === 'INSCRIT' || d.statut === 'PAIMENT_VALID',
+                                    'bg-[#fef2f2] text-[#dc2626] border border-[#fee2e2]': !!d.statut?.startsWith('REJETE'),
+                                    'bg-[#f5f3ff] text-[#7c3aed] border border-[#e9d5ff]': d.statut === 'INSCRIT'
+                                }">
+                                {{d.statut}}
+                            </span>
+                        </div>
+                        <div>
+                            <h4
+                                class="font-bold text-[#0f1117] group-hover:text-[#2563eb] transition-colors line-clamp-1">
+                                {{d.student?.nom}} {{d.student?.prenom}}
+                            </h4>
+                            <p class="text-xs text-[#8b92a9] mb-3 truncate">{{d.student?.email}}</p>
+
+                            <div class="bg-[#f1f3f9]/50 rounded-xl p-3 mb-4">
+                                <p class="text-[10px] text-[#8b92a9] font-bold uppercase tracking-widest mb-1">Diplôme
+                                </p>
+                                <p class="text-xs font-semibold text-[#4a5068] truncate">{{d.diplomeDemande}}</p>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] text-[#8b92a9] font-medium">
+                                    {{d.dateCreation | date:'dd/MM/yyyy'}}
+                                </span>
+                                <button
+                                    class="p-1.5 text-[#8b92a9] hover:text-[#2563eb] hover:bg-[#eff4ff] rounded-lg transition-all">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGINATION -->
+            <div *ngIf="totalPages > 1 && !loading"
+                class="px-6 py-4 border-t border-[#e8eaf0] flex items-center justify-between bg-[#f1f3f9]/30">
+                <div class="text-sm text-[#8b92a9] font-medium">
+                    Affichage de <span class="text-[#0f1117] font-bold">{{(currentPage * pageSize) + 1}}</span>
+                    à <span class="text-[#0f1117] font-bold">{{Math.min((currentPage + 1) * pageSize,
+                        totalElements)}}</span>
+                    sur <span class="text-[#0f1117] font-bold">{{totalElements}}</span> dossiers
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button (click)="previousPage()" [disabled]="currentPage === 0"
+                        class="pagination-btn p-2 border border-gray-300 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+
+                    <div class="flex items-center space-x-1">
+                        <ng-container *ngFor="let page of [].constructor(Math.min(totalPages, 5)); let i = index">
+                            <button (click)="goToPage(i)" [class.bg-[#2563eb]]="currentPage === i"
+                                [class.text-white]="currentPage === i"
+                                class="w-10 h-10 rounded-lg border font-bold text-sm transition-all"
+                                [class.border-[#2563eb]]="currentPage === i"
+                                [class.border-[#e8eaf0]]="currentPage !== i" [class.text-[#4a5068]]="currentPage !== i"
+                                [class.hover:bg-white]="currentPage !== i">
+                                {{i + 1}}
+                            </button>
+                        </ng-container>
+                    </div>
+
+                    <button (click)="nextPage()" [disabled]="currentPage >= totalPages - 1"
+                        class="pagination-btn p-2 border border-gray-300 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
                     </button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Stats Cards -->
-        <div class="px-8 py-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Total -->
-                <div class="admin-stat-card stat-card">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="p-3 bg-blue-100 rounded-lg">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <h3 class="text-4xl font-bold text-gray-900">{{stats.totalInscriptions}}</h3>
-                    <p class="text-gray-500 text-sm mt-1">Total Inscriptions</p>
-                </div>
-
-                <!-- En attente -->
-                <div class="admin-stat-card stat-card">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="p-3 bg-orange-100 rounded-lg">
-                            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <h3 class="text-4xl font-bold text-gray-900">{{stats.demandesEnAttente}}</h3>
-                    <p class="text-gray-500 text-sm mt-1">À traiter par les agents</p>
-                </div>
-
-                <!-- Paiements validés -->
-                <div class="admin-stat-card stat-card">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="p-3 bg-green-100 rounded-lg">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <h3 class="text-4xl font-bold text-gray-900">{{stats.paiementsValides}}</h3>
-                    <p class="text-gray-500 text-sm mt-1">Paiements validés</p>
-                </div>
-
-                <!-- Inscrits définitifs -->
-                <div class="admin-stat-card stat-card">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="p-3 bg-purple-100 rounded-lg">
-                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <h3 class="text-4xl font-bold text-gray-900">{{stats.inscritsDefinitifs}}</h3>
-                    <p class="text-gray-500 text-sm mt-1">Inscrits définitifs</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Funnel Section (Consistency Check) -->
-        <div class="px-8 mb-6">
-            <div class="dashboard-card p-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Distribution par Statut</h2>
-                <div class="flex items-end gap-2 h-32">
-                    <div *ngFor="let s of distribution" [style.height.%]="getDistributionPercentage(s.count)"
-                        class="flex-1 bg-blue-100 hover:bg-blue-200 transition-all rounded-t relative group">
-                        <div
-                            class="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                            {{s.status}}: {{s.count}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Table Section -->
-        <div class="px-8 pb-8">
-            <div class="admin-table-wrapper">
-                <div class="p-6 border-b border-gray-200 bg-white">
-                    <div class="flex items-center space-x-4">
-                        <div class="flex-1 relative">
-                            <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                            <input type="text" [(ngModel)]="searchTerm" (input)="applyFilter()"
-                                placeholder="Rechercher un dossier..."
-                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none" />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full admin-table">
-                        <thead>
-                            <tr>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ID</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ÉTUDIANT</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    FORMATION</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    STATUT</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    DATE</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ACTIONS</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr *ngFor="let d of filteredDemandes" class="hover:bg-gray-50 cursor-pointer"
-                                (click)="openDetails(d)">
-                                <td class="px-6 py-4 whitespace-nowrap text-blue-600 font-medium">#{{d.id}}</td>
-                                <td class="px-6 py-4">
-                                    <div class="text-sm font-medium text-gray-900">{{d.student?.nom}}
-                                        {{d.student?.prenom}}</div>
-                                    <div class="text-xs text-gray-500">{{d.student?.email}}</div>
-                                </td>
-                                <td class="px-6 py-4 text-sm text-gray-500">{{d.diplomeDemande}}</td>
-                                <td class="px-6 py-4">
-                                    <span class="px-2 py-1 text-xs font-semibold rounded-full" [ngClass]="{
-                                            'bg-orange-100 text-orange-700': d.statut && ['SOUMIS', 'EN_COURS_SCOLARITE', 'EN_COURS_DEPARTEMENT'].includes(d.statut),
-                                            'bg-green-100 text-green-700': d.statut === 'INSCRIT' || d.statut === 'PAYMENT_VALID',
-                                            'bg-red-100 text-red-700': !!d.statut?.startsWith('REJETE')
-                                        }">
-                                        {{d.statut}}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-sm text-gray-500">{{d.dateCreation | date:'dd/MM/yyyy'}}</td>
-                                <td class="px-6 py-4">
-                                    <button *ngIf="d.statut === 'PAYMENT_VALID'"
-                                        (click)="$event.stopPropagation(); finalize(d.id)"
-                                        class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-all font-semibold shadow-sm">
-                                        Finaliser
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Modal Détail (Style Scolarité) -->
+    <!-- Modal Détail (conservé tel quel) -->
     <div *ngIf="showDetailDrawer && selectedDemande"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 modal-overlay">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-content border border-gray-200">
-            <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+        <div
+            class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-content border border-gray-200">
+            <div
+                class="sticky top-0 bg-white border-b border-[#e8eaf0] px-6 py-4 flex items-center justify-between rounded-t-2xl">
                 <div>
-                    <p class="text-xs text-blue-600 font-bold uppercase tracking-widest">DÉTAIL DOSSIER
-                        #{{selectedDemande.id}}</p>
-                    <h2 class="text-xl font-bold text-gray-900">{{selectedDemande.student?.nom}}
-                        {{selectedDemande.student?.prenom}}</h2>
+                    <p class="text-xs text-[#2563eb] font-bold uppercase tracking-widest">
+                        DÉTAIL DOSSIER #{{selectedDemande.id}}
+                    </p>
+                    <h2 class="text-xl font-bold text-[#0f1117]">
+                        {{selectedDemande.student?.nom}} {{selectedDemande.student?.prenom}}
+                    </h2>
                 </div>
                 <button (click)="showDetailDrawer = false" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -272,24 +553,25 @@
                 <!-- Info Grid -->
                 <div class="grid grid-cols-2 gap-6">
                     <div>
-                        <p class="text-xs font-semibold text-gray-400 uppercase">Diplôme demandé</p>
-                        <p class="text-base font-medium text-gray-800">{{selectedDemande.diplomeDemande}}</p>
+                        <p class="text-xs font-semibold text-[#8b92a9] uppercase">Diplôme demandé</p>
+                        <p class="text-base font-medium text-[#4a5068]">{{selectedDemande.diplomeDemande}}</p>
                     </div>
                     <div>
-                        <p class="text-xs font-semibold text-gray-400 uppercase">Email Universitaire</p>
-                        <p class="text-base font-medium text-blue-600">{{selectedDemande.student?.emailUniversitaire ||
-                            'Non généré'}}</p>
+                        <p class="text-xs font-semibold text-[#8b92a9] uppercase">Email Universitaire</p>
+                        <p class="text-base font-medium text-[#2563eb]">
+                            {{selectedDemande.student?.emailUniversitaire || 'Non généré'}}
+                        </p>
                     </div>
                 </div>
 
                 <!-- Actions -->
-                <div class="flex gap-4 pt-4 border-t">
+                <div class="flex gap-4 pt-4 border-t border-[#e8eaf0]">
                     <button *ngIf="selectedDemande.statut === 'PAYMENT_VALID'" (click)="finalize(selectedDemande.id)"
-                        class="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-bold transition-all shadow-md">
+                        class="flex-1 px-6 py-3 bg-[#059669] text-white rounded-lg hover:bg-[#047857] font-bold transition-all shadow-md">
                         Finaliser l'inscription & Créer Compte
                     </button>
                     <button (click)="showDetailDrawer = false"
-                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 flex-1">
+                        class="px-6 py-3 border border-[#d1d5e0] rounded-lg text-[#4a5068] hover:bg-[#f1f3f9] flex-1 transition-all">
                         Fermer
                     </button>
                 </div>

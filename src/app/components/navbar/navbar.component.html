@@ -1,5 +1,5 @@
-<nav [class]="'shadow-md sticky top-0 z-50 transition-all duration-300 ' + 
-           (isNavbarTransparent ? 'navbar-transparent' : 'navbar-solid') + 
+<nav [class]="'sticky top-0 z-50 transition-all duration-300 ' + 
+           (isNavbarTransparent ? 'navbar-transparent' : 'navbar-solid shadow-md') + 
            (isNavbarHidden ? ' -translate-y-full' : ' translate-y-0')">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16 md:h-20">
@@ -119,7 +119,7 @@
           class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-md">
           Pré-inscription
         </button>
-        <button *ngIf="!isLoggedIn" (click)="logout()"
+        <button *ngIf="isLoggedIn" (click)="logout()"
           class="w-full px-4 py-3 text-red-600 font-semibold bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
           Déconnexion
         </button>

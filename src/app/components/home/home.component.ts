@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
 import { PreInscriptionComponent } from '../pre-inscription/pre-inscription.component';
+import { ScrollService } from '../../services/scroll.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -134,12 +136,27 @@ export class HomeComponent implements AfterViewInit, OnInit {
   employabilityRate = 0;
   programsCount = 0;
   private countersAnimated = false;
+  private scrollSubscription?: Subscription;
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private scrollService: ScrollService
+  ) { }
 
   ngOnInit() {
     // Start counter animations after a short delay
     setTimeout(() => this.animateCounters(), 500);
+
+    // Écouter le service de scroll
+    this.scrollSubscription = this.scrollService.scroll$.subscribe(scrollTop => {
+      this.handleScrollUpdate(scrollTop);
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.scrollSubscription) {
+      this.scrollSubscription.unsubscribe();
+    }
   }
 
   ngAfterViewInit() {
@@ -159,9 +176,7 @@ export class HomeComponent implements AfterViewInit, OnInit {
     }
   }
 
-  @HostListener('window:scroll')
-  onScroll() {
-    const scrolled = window.pageYOffset;
+  private handleScrollUpdate(scrolled: number) {
     const parallaxSpeed = 0.5;
 
     // Parallax video effect
@@ -175,6 +190,12 @@ export class HomeComponent implements AfterViewInit, OnInit {
         this.countersAnimated = true;
       }
     }
+  }
+
+  @HostListener('window:scroll')
+  onScroll() {
+    const scrolled = window.pageYOffset || document.documentElement.scrollTop;
+    this.handleScrollUpdate(scrolled);
   }
 
   private animateCounters() {

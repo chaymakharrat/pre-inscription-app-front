@@ -1,0 +1,509 @@
+<div class="users-page">
+
+    <!-- ═══════════════════ HEADER ═══════════════════ -->
+    <header class="users-header">
+        <div class="header-left">
+            <button class="back-btn" routerLink="/dashboard-admin">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <div>
+                <h1 class="header-title">Gestion des Comptes</h1>
+                <p class="header-sub">
+                    <span class="dot dot-green"></span>
+                    {{ totalElements }} comptes • {{ activeCount }} actifs • {{ inactiveCount }} désactivés
+                </p>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <!-- Vue Toggle -->
+            <div class="view-toggle">
+                <button [class.active]="viewMode === 'list'" (click)="viewMode = 'list'" title="Vue liste">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="8" y1="6" x2="21" y2="6" />
+                        <line x1="8" y1="12" x2="21" y2="12" />
+                        <line x1="8" y1="18" x2="21" y2="18" />
+                        <line x1="3" y1="6" x2="3.01" y2="6" />
+                        <line x1="3" y1="12" x2="3.01" y2="12" />
+                        <line x1="3" y1="18" x2="3.01" y2="18" />
+                    </svg>
+                </button>
+                <button [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'" title="Vue grille">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" />
+                        <rect x="14" y="3" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" />
+                        <rect x="14" y="14" width="7" height="7" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Bulk Actions (si sélection) -->
+            <div class="bulk-actions" *ngIf="selectedIds.length > 0">
+                <span class="bulk-count">{{ selectedIds.length }} sélectionné(s)</span>
+                <button class="bulk-btn activate" (click)="bulkAction('activate')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+                        <polyline points="22 4 12 14.01 9 11.01" />
+                    </svg>
+                    Activer tout
+                </button>
+                <button class="bulk-btn deactivate" (click)="bulkAction('deactivate')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                    </svg>
+                    Désactiver tout
+                </button>
+                <button class="bulk-btn clear" (click)="clearSelection()">✕</button>
+            </div>
+
+            <!-- Bouton Créer -->
+            <button class="btn-create" (click)="openCreateModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Nouveau compte
+            </button>
+        </div>
+    </header>
+
+    <!-- ═══════════════════ ROLE TABS ═══════════════════ -->
+    <div class="role-tabs-bar">
+        <div class="role-tabs">
+            <button class="role-tab" [class.active]="activeRoleFilter === 'ALL'" (click)="setRoleFilter('ALL')">
+                <span class="tab-icon">🌐</span>
+                <span class="tab-label">Tous</span>
+                <span class="tab-count">{{ totalElements }}</span>
+            </button>
+            <button class="role-tab etudiant" [class.active]="activeRoleFilter === 'ETUDIANT'"
+                (click)="setRoleFilter('ETUDIANT')">
+                <span class="tab-icon">🎓</span>
+                <span class="tab-label">Étudiants</span>
+                <span class="tab-count">{{ roleCounts['ETUDIANT'] || 0 }}</span>
+            </button>
+            <button class="role-tab enseignant" [class.active]="activeRoleFilter === 'ENSEIGNANT_RESPONSABLE'"
+                (click)="setRoleFilter('ENSEIGNANT_RESPONSABLE')">
+                <span class="tab-icon">👨‍🏫</span>
+                <span class="tab-label">Enseignants</span>
+                <span class="tab-count">{{ roleCounts['ENSEIGNANT_RESPONSABLE'] || 0 }}</span>
+            </button>
+            <button class="role-tab finance" [class.active]="activeRoleFilter === 'AGENT_FINANCE'"
+                (click)="setRoleFilter('AGENT_FINANCE')">
+                <span class="tab-icon">💰</span>
+                <span class="tab-label">Finance</span>
+                <span class="tab-count">{{ roleCounts['AGENT_FINANCE'] || 0 }}</span>
+            </button>
+            <button class="role-tab admin" [class.active]="activeRoleFilter === 'ADMIN'"
+                (click)="setRoleFilter('ADMIN')">
+                <span class="tab-icon">⚡</span>
+                <span class="tab-label">Admins</span>
+                <span class="tab-count">{{ roleCounts['ADMIN'] || 0 }}</span>
+            </button>
+        </div>
+
+        <!-- Status Filter + Search -->
+        <div class="filter-right">
+            <div class="status-pills">
+                <button class="pill" [class.active]="statusFilter === 'ALL'"
+                    (click)="setStatusFilter('ALL')">Tous</button>
+                <button class="pill active-pill" [class.active]="statusFilter === 'ACTIF'"
+                    (click)="setStatusFilter('ACTIF')">
+                    <span class="dot dot-green"></span> Actifs
+                </button>
+                <button class="pill inactive-pill" [class.active]="statusFilter === 'INACTIF'"
+                    (click)="setStatusFilter('INACTIF')">
+                    <span class="dot dot-red"></span> Inactifs
+                </button>
+            </div>
+
+            <div class="search-box">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Nom, email, téléphone..."
+                    class="search-input">
+                <button *ngIf="searchTerm" (click)="clearSearch()" class="search-clear">✕</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════ STATS MINI ═══════════════════ -->
+    <div class="mini-stats">
+        <div class="mini-stat">
+            <div class="mini-stat-bar" [style.width.%]="getActivePercent()" style="background: #10b981"></div>
+            <span class="mini-stat-label">Taux d'activation</span>
+            <span class="mini-stat-value">{{ getActivePercent() | number:'1.0-0' }}%</span>
+        </div>
+        <div class="mini-stat-divider"></div>
+        <div class="mini-stat-item">
+            <span class="mini-stat-dot" style="background:#6366f1"></span>
+            <span>Créés aujourd'hui :</span>
+            <strong>{{ todayCount }}</strong>
+        </div>
+        <div class="mini-stat-item">
+            <span class="mini-stat-dot" style="background:#f59e0b"></span>
+            <span>Cette semaine :</span>
+            <strong>{{ weekCount }}</strong>
+        </div>
+        <div class="mini-stat-item">
+            <span class="mini-stat-dot" style="background:#ef4444"></span>
+            <span>Désactivés :</span>
+            <strong>{{ inactiveCount }}</strong>
+        </div>
+    </div>
+
+    <!-- ═══════════════════ LOADING ═══════════════════ -->
+    <div class="loading-bar" *ngIf="loading">
+        <div class="loading-progress"></div>
+    </div>
+
+    <!-- ═══════════════════ LISTE ═══════════════════ -->
+    <div class="content-area">
+
+        <!-- Vue Liste -->
+        <div class="list-view" *ngIf="viewMode === 'list' && !loading">
+            <div class="list-header-row">
+                <div class="col-check">
+                    <input type="checkbox" [checked]="isAllSelected()" (change)="toggleSelectAll()" class="checkbox">
+                </div>
+                <div class="col-user">UTILISATEUR</div>
+                <div class="col-role">RÔLE</div>
+                <div class="col-contact">CONTACT</div>
+                <div class="col-date">CRÉATION</div>
+                <div class="col-status">STATUT</div>
+                <div class="col-actions">ACTIONS</div>
+            </div>
+
+            <div class="list-rows">
+                <div class="list-row" *ngFor="let user of users; let i = index"
+                    [class.selected]="selectedIds.includes(user.id)" [class.inactive-row]="!user.actif">
+
+                    <div class="col-check">
+                        <input type="checkbox" [checked]="selectedIds.includes(user.id)"
+                            (change)="toggleSelect(user.id)" class="checkbox">
+                    </div>
+
+                    <div class="col-user">
+                        <div class="user-avatar" [style.background]="getAvatarGradient(i)">
+                            {{ getInitials(user.nom, user.prenom) }}
+                        </div>
+                        <div class="user-info">
+                            <span class="user-name">{{ user.prenom }} {{ user.nom }}</span>
+                            <span class="user-login">{{ user.login }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-role">
+                        <span class="role-badge" [ngClass]="getRoleClass(user.role)">
+                            {{ getRoleIcon(user.role) }} {{ getRoleLabel(user.role) }}
+                        </span>
+                    </div>
+
+                    <div class="col-contact">
+                        <span class="contact-phone" *ngIf="user.numeroDeTelephone">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 13a19.79 19.79 0 01-3.07-8.67A2 2 0 012 2.18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+                            </svg>
+                            {{ user.numeroDeTelephone }}
+                        </span>
+                        <span class="no-contact" *ngIf="!user.numeroDeTelephone">—</span>
+                    </div>
+
+                    <div class="col-date">
+                        <span class="date-text">{{ user.dateCreation | date:'dd/MM/yyyy' }}</span>
+                        <span class="time-text">{{ user.dateCreation | date:'HH:mm' }}</span>
+                    </div>
+
+                    <div class="col-status">
+                        <label class="toggle-switch" [title]="user.actif ? 'Désactiver' : 'Activer'">
+                            <input type="checkbox" [checked]="user.actif" (change)="toggleUserStatus(user, $event)">
+                            <span class="toggle-track">
+                                <span class="toggle-thumb"></span>
+                            </span>
+                        </label>
+                        <span class="status-text" [class.active-text]="user.actif" [class.inactive-text]="!user.actif">
+                            {{ user.actif ? 'Actif' : 'Inactif' }}
+                        </span>
+                    </div>
+
+                    <div class="col-actions">
+                        <button class="action-btn view-btn" (click)="openUserDetail(user)" title="Voir détail">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </button>
+                        <button class="action-btn edit-btn" (click)="openEditModal(user)" title="Modifier">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                        </button>
+                        <button class="action-btn delete-btn" (click)="confirmDelete(user)" title="Supprimer">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6l-1 14H6L5 6" />
+                                <path d="M10 11v6M14 11v6M9 6V4h6v2" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Empty state -->
+                <div class="empty-state" *ngIf="users.length === 0">
+                    <div class="empty-icon">👤</div>
+                    <p class="empty-title">Aucun utilisateur trouvé</p>
+                    <p class="empty-sub">Essayez de modifier vos filtres de recherche</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vue Grille -->
+        <div class="grid-view" *ngIf="viewMode === 'grid' && !loading">
+            <div class="user-card" *ngFor="let user of users; let i = index" [class.inactive-card]="!user.actif">
+
+                <div class="card-header">
+                    <input type="checkbox" [checked]="selectedIds.includes(user.id)" (change)="toggleSelect(user.id)"
+                        class="card-checkbox">
+                    <div class="card-avatar" [style.background]="getAvatarGradient(i)">
+                        {{ getInitials(user.nom, user.prenom) }}
+                        <span class="avatar-status" [class.status-on]="user.actif"
+                            [class.status-off]="!user.actif"></span>
+                    </div>
+                    <div class="card-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" [checked]="user.actif" (change)="toggleUserStatus(user, $event)">
+                            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <h3 class="card-name">{{ user.prenom }} {{ user.nom }}</h3>
+                    <p class="card-email">{{ user.login }}</p>
+                    <span class="role-badge" [ngClass]="getRoleClass(user.role)">
+                        {{ getRoleIcon(user.role) }} {{ getRoleLabel(user.role) }}
+                    </span>
+                </div>
+
+                <div class="card-footer">
+                    <span class="card-date">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                        {{ user.dateCreation | date:'dd/MM/yy' }}
+                    </span>
+                    <div class="card-actions">
+                        <button class="action-btn view-btn" (click)="openUserDetail(user)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </button>
+                        <button class="action-btn delete-btn" (click)="confirmDelete(user)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6l-1 14H6L5 6" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" *ngIf="totalPages > 1 && !loading">
+            <button class="page-btn" [disabled]="currentPage === 0" (click)="goToPage(currentPage - 1)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6" />
+                </svg>
+            </button>
+
+            <ng-container *ngFor="let p of getPageNumbers()">
+                <button class="page-btn page-num" [class.current]="p === currentPage" (click)="goToPage(p)"
+                    *ngIf="p !== -1">{{ p + 1 }}</button>
+                <span class="page-dots" *ngIf="p === -1">…</span>
+            </ng-container>
+
+            <button class="page-btn" [disabled]="currentPage === totalPages - 1" (click)="goToPage(currentPage + 1)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <span class="page-info">{{ currentPage * pageSize + 1 }}–{{ Math.min((currentPage + 1) * pageSize,
+                totalElements) }} / {{ totalElements }}</span>
+        </div>
+    </div>
+
+    <!-- ═══════════════════ MODAL DÉTAIL UTILISATEUR ═══════════════════ -->
+    <div class="modal-overlay" *ngIf="showDetailModal" (click)="closeModals()">
+        <div class="modal detail-modal" (click)="$event.stopPropagation()">
+            <button class="modal-close" (click)="closeModals()">✕</button>
+
+            <div class="detail-header" *ngIf="selectedUser">
+                <div class="detail-avatar" [style.background]="getAvatarGradient(0)">
+                    {{ getInitials(selectedUser.nom, selectedUser.prenom) }}
+                </div>
+                <div>
+                    <h2 class="detail-name">{{ selectedUser.prenom }} {{ selectedUser.nom }}</h2>
+                    <p class="detail-email">{{ selectedUser.login }}</p>
+                    <span class="role-badge" [ngClass]="getRoleClass(selectedUser.role)">
+                        {{ getRoleIcon(selectedUser.role) }} {{ getRoleLabel(selectedUser.role) }}
+                    </span>
+                </div>
+                <div class="detail-status-badge" [class.active-badge]="selectedUser.actif"
+                    [class.inactive-badge]="!selectedUser.actif">
+                    {{ selectedUser.actif ? '✓ Actif' : '✗ Inactif' }}
+                </div>
+            </div>
+
+            <div class="detail-grid" *ngIf="selectedUser">
+                <div class="detail-item">
+                    <label>ID Système</label>
+                    <span>#{{ selectedUser.id }}</span>
+                </div>
+                <div class="detail-item">
+                    <label>ID Keycloak</label>
+                    <span class="mono">{{ selectedUser.keycloakUserId | slice:0:12 }}...</span>
+                </div>
+                <div class="detail-item">
+                    <label>Téléphone</label>
+                    <span>{{ selectedUser.numeroDeTelephone || '—' }}</span>
+                </div>
+                <div class="detail-item">
+                    <label>Date création</label>
+                    <span>{{ selectedUser.dateCreation | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                <div class="detail-item" *ngIf="!selectedUser.actif">
+                    <label>Désactivé le</label>
+                    <span class="text-red">{{ selectedUser.dateDesactivation | date:'dd/MM/yyyy' }}</span>
+                </div>
+                <div class="detail-item" *ngIf="selectedUser.raisonDesactivation">
+                    <label>Raison</label>
+                    <span class="text-red">{{ selectedUser.raisonDesactivation }}</span>
+                </div>
+            </div>
+
+            <div class="detail-actions" *ngIf="selectedUser">
+                <button class="btn-activate" *ngIf="!selectedUser.actif" (click)="activerUtilisateur(selectedUser)">
+                    ✓ Activer le compte
+                </button>
+                <button class="btn-deactivate" *ngIf="selectedUser.actif" (click)="openDeactivateModal(selectedUser)">
+                    ✗ Désactiver le compte
+                </button>
+                <button class="btn-outline" (click)="closeModals()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════ MODAL DÉSACTIVATION ═══════════════════ -->
+    <div class="modal-overlay" *ngIf="showDeactivateModal" (click)="closeModals()">
+        <div class="modal deactivate-modal" (click)="$event.stopPropagation()">
+            <div class="deactivate-icon">⚠️</div>
+            <h3>Désactiver ce compte ?</h3>
+            <p>L'utilisateur <strong>{{ selectedUser?.prenom }} {{ selectedUser?.nom }}</strong> ne pourra plus se
+                connecter.</p>
+            <div class="form-group">
+                <label>Raison (optionnel)</label>
+                <textarea [(ngModel)]="deactivateReason" placeholder="Ex: Fin de contrat, départ étudiant..."
+                    rows="3"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" (click)="closeModals()">Annuler</button>
+                <button class="btn-deactivate" (click)="desactiverUtilisateur(selectedUser!)">
+                    Confirmer la désactivation
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════ MODAL SUPPRESSION ═══════════════════ -->
+    <div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeModals()">
+        <div class="modal delete-modal" (click)="$event.stopPropagation()">
+            <div class="delete-icon">🗑️</div>
+            <h3>Supprimer définitivement ?</h3>
+            <p>Le compte de <strong>{{ selectedUser?.prenom }} {{ selectedUser?.nom }}</strong> sera supprimé de la base
+                de données et de Keycloak. Cette action est irréversible.</p>
+            <div class="modal-footer">
+                <button class="btn-outline" (click)="closeModals()">Annuler</button>
+                <button class="btn-delete" (click)="supprimerUtilisateur(selectedUser!)">
+                    Supprimer définitivement
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════ MODAL CRÉATION / ÉDITION ═══════════════════ -->
+    <div class="modal-overlay" *ngIf="showFormModal" (click)="closeModals()">
+        <div class="modal form-modal" (click)="$event.stopPropagation()">
+            <button class="modal-close" (click)="closeModals()">✕</button>
+            <h3>{{ editMode ? 'Modifier' : 'Créer' }} un compte</h3>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Prénom *</label>
+                    <input type="text" [(ngModel)]="formData.prenom" placeholder="Prénom">
+                </div>
+                <div class="form-group">
+                    <label>Nom *</label>
+                    <input type="text" [(ngModel)]="formData.nom" placeholder="Nom">
+                </div>
+                <div class="form-group full">
+                    <label>Email / Login *</label>
+                    <input type="email" [(ngModel)]="formData.email" placeholder="email@itech.tn" [disabled]="editMode">
+                </div>
+                <div class="form-group" *ngIf="!editMode">
+                    <label>Mot de passe *</label>
+                    <input type="password" [(ngModel)]="formData.password" placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" [(ngModel)]="formData.numeroDeTelephone" placeholder="0X XX XX XX XX">
+                </div>
+                <div class="form-group">
+                    <label>Rôle *</label>
+                    <select [(ngModel)]="formData.role">
+                        <option value="">-- Sélectionner --</option>
+                        <option value="ETUDIANT">🎓 Étudiant</option>
+                        <option value="ENSEIGNANT_RESPONSABLE">👨‍🏫 Enseignant responsable</option>
+                        <option value="AGENT_FINANCE">💰 Agent finance</option>
+                        <option value="ADMIN">⚡ Administrateur</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-outline" (click)="closeModals()">Annuler</button>
+                <button class="btn-create-submit" (click)="submitForm()" [disabled]="formLoading">
+                    <span *ngIf="formLoading" class="spinner"></span>
+                    {{ editMode ? 'Enregistrer' : 'Créer le compte' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" [class.show]="toastVisible" [class.toast-success]="toastType === 'success'"
+        [class.toast-error]="toastType === 'error'">
+        {{ toastMessage }}
+    </div>
+
+</div>

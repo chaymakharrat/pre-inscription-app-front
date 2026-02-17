@@ -9,6 +9,7 @@ import { HomeComponent } from './components/home/home.component';
 import { DashboardAdminComponent } from './components/dashboard-admin/dashboard-admin.component';
 import { StatistiquesComponent } from './components/statistiques/statistiques.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
+import { UsersManagementComponent } from './components/users-management-component/users-management-component.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -19,5 +20,6 @@ export const routes: Routes = [
     { path: 'dashboard-admin', component: DashboardAdminComponent, canActivate: [authGuard], data: { roles: ['ADMIN'] } },
     { path: 'statistiques', component: StatistiquesComponent },
     { path: 'notifications', component: NotificationsComponent },
+    { path: 'admin/users', component: UsersManagementComponent, canActivate: [authGuard], data: { roles: ['ADMIN'] } },
     { path: '**', redirectTo: '' }
 ];

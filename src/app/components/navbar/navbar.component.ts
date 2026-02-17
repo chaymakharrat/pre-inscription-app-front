@@ -5,6 +5,8 @@ import { filter } from 'rxjs/operators';
 import { KeycloakService } from 'keycloak-angular';
 import { KeycloakProfile } from 'keycloak-js';
 import { CurrentStudentService } from '../../services/current-student.service';
+import { ScrollService } from '../../services/scroll.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -22,6 +24,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   isNavbarHidden = false;
   isNavbarTransparent = false; // Démarre solid par défaut
   private lastScrollTop = 0;
+  private scrollSubscription?: Subscription;
 
   // Détection de la page actuelle
   isHomePage = false;
@@ -33,7 +36,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private router: Router,
     private keycloak: KeycloakService,
-    private currentStudentService: CurrentStudentService
+    private currentStudentService: CurrentStudentService,
+    private scrollService: ScrollService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -68,6 +72,11 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe(() => {
         this.checkCurrentRoute();
       });
+
+    // Écouter le service de scroll
+    this.scrollSubscription = this.scrollService.scroll$.subscribe(scrollTop => {
+      this.handleScrollUpdate(scrollTop);
+    });
   }
 
   ngAfterViewInit(): void {
@@ -78,7 +87,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Cleanup if needed
+    if (this.scrollSubscription) {
+      this.scrollSubscription.unsubscribe();
+    }
   }
 
   /**
@@ -117,15 +128,13 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  @HostListener('window:scroll')
-  onScroll(): void {
+  private handleScrollUpdate(scrollTop: number): void {
     // Si on n'est pas sur la page d'accueil, garder solid
     if (!this.isHomePage) {
       this.isNavbarTransparent = false;
       return;
     }
 
-    const scrollTop = window.pageYOffset;
     const videoSectionHeight = window.innerHeight;
 
     // Hide/Show logic
@@ -135,14 +144,23 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isNavbarHidden = false;
     }
 
-    // Transparency logic (seulement sur page d'accueil)
+    // Transparency logic
     if (scrollTop < videoSectionHeight - 100) {
-      this.isNavbarTransparent = true; // Sur la vidéo
+      this.isNavbarTransparent = true;
     } else {
-      this.isNavbarTransparent = false; // Après la vidéo
+      this.isNavbarTransparent = false;
     }
 
     this.lastScrollTop = scrollTop;
+  }
+
+  @HostListener('window:scroll')
+  onScroll(): void {
+    // Garder le listener window pour les cas où le scroll est global
+    // mais le service de scroll piloté par AppComponent prévaudra
+    // si on est dans le layout avec sidebar
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    this.handleScrollUpdate(scrollTop);
   }
 
   // Gestion des menus
@@ -194,7 +212,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   logout(): void {
     this.currentStudentService.clear();
-    this.keycloak.logout();
+    this.keycloak.logout(window.location.origin);
   }
 
   hasRole(role: string): boolean {

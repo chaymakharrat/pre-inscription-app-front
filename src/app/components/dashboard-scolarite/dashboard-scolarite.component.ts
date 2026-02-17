@@ -56,6 +56,7 @@ export class ScolariteDashboardComponent implements OnInit {
   pageSize = 6;
   totalPages = 0;
   totalElements = 0;
+  viewMode: 'list' | 'grid' = 'list';
   // Variables pour le visualiseur de documents
   showDocumentViewer = false;
   currentDocumentUrl: string | null = null;
@@ -98,29 +99,6 @@ export class ScolariteDashboardComponent implements OnInit {
     this.loadDemandes();
   }
 
-  // Navigation dans le menu latéral
-  goToAccueil() {
-    this.setFilter('tous');
-  }
-
-  goToDossiers() {
-    this.setFilter('tous');
-  }
-
-  openStatistiquesSection() {
-    this.router.navigate(['/statistiques']);
-    // Remonte en haut de la page (cartes de stats)
-    // window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  openNotificationsSection() {
-    this.router.navigate(['/notifications']);
-  }
-
-  openParametresSection() {
-    // À remplacer par une vraie page de paramètres plus tard
-    alert('Page paramètres à implémenter.');
-  }
 
   loadStatistiques() {
     this.scolariteService.getStatistiques().subscribe({
@@ -223,15 +201,9 @@ export class ScolariteDashboardComponent implements OnInit {
     this.loadDemandes();
   }
 
-  // ✅ REMPLACER votre méthode onSearch() par celle-ci
   onSearch() {
+    this.currentPage = 0;
     if (this.searchTerm.trim()) {
-      // Ajouter à l'historique
-      if (!this.searchHistory.includes(this.searchTerm)) {
-        this.searchHistory.unshift(this.searchTerm);
-        this.searchHistory = this.searchHistory.slice(0, 5); // Garder les 5 dernières
-      }
-
       this.scolariteService.searchByDiplome(this.searchTerm, this.currentPage, this.pageSize).subscribe({
         next: (response) => {
           this.demandes = response.content;
@@ -252,9 +224,31 @@ export class ScolariteDashboardComponent implements OnInit {
     }
   }
 
-  openDemandeDetail(demande: DemandeDetailDTO) {
+  // openDemandeDetail(demande: DemandeDetailDTO) {
+  //   this.selectedDemande = demande;
+  //   this.showModal = true;
+
+  //   // Récupérer le taskId de Camunda
+  //   this.scolariteService.getTasksForEnrollment(demande.id).subscribe({
+  //     next: (tasks: CamundaTask[]) => {
+  //       if (tasks && tasks.length > 0) {
+  //         this.taskId = tasks[0].id;
+  //       }
+  //     },
+  //     error: (error) => console.error('Erreur récupération task:', error)
+  //   });
+  // }
+  activeTab: 'documents' | 'action' = 'documents'; // Onglet actif du modal
+  openDemandeDetail(demande: DemandeDetailDTO, initialTab: 'documents' | 'action' = 'documents', actionType?: 'validation' | 'rejet' | 'pieces') {
     this.selectedDemande = demande;
     this.showModal = true;
+    this.activeTab = initialTab;
+    this.commentaire = '';
+
+    // Configurer l'état initial selon l'action demandée
+    this.showValidationDialog = actionType === 'validation';
+    this.showRejetDialog = actionType === 'rejet';
+    this.showDemanderPiecesDialog = actionType === 'pieces';
 
     // Récupérer le taskId de Camunda
     this.scolariteService.getTasksForEnrollment(demande.id).subscribe({
@@ -267,6 +261,14 @@ export class ScolariteDashboardComponent implements OnInit {
     });
   }
 
+  // closeModal() {
+  //   this.showModal = false;
+  //   this.selectedDemande = null;
+  //   this.commentaire = '';
+  //   this.showValidationDialog = false;
+  //   this.showRejetDialog = false;
+  //   this.showDemanderPiecesDialog = false;
+  // }
   closeModal() {
     this.showModal = false;
     this.selectedDemande = null;
@@ -274,6 +276,7 @@ export class ScolariteDashboardComponent implements OnInit {
     this.showValidationDialog = false;
     this.showRejetDialog = false;
     this.showDemanderPiecesDialog = false;
+    this.activeTab = 'documents';         // ← Reset onglet
   }
 
   openValidationDialog() {
@@ -290,6 +293,30 @@ export class ScolariteDashboardComponent implements OnInit {
     this.showDemanderPiecesDialog = true;
   }
 
+  // validerDossier() {
+  //   if (!this.selectedDemande || !this.taskId) return;
+
+  //   this.actionLoading = true;
+  //   this.scolariteService.completeTask(
+  //     this.taskId,
+  //     'ACCEPTE',
+  //     this.commentaire || 'Dossier validé',
+  //     'scolarite_admin'
+  //   ).subscribe({
+  //     next: () => {
+  //       this.actionLoading = false;
+  //       this.closeModal();
+  //       this.loadDemandes();
+  //       this.loadStatistiques();
+  //       alert('✅ Dossier validé avec succès');
+  //     },
+  //     error: (error) => {
+  //       this.actionLoading = false;
+  //       console.error('Erreur validation:', error);
+  //       alert('❌ Erreur lors de la validation');
+  //     }
+  //   });
+  // }
   validerDossier() {
     if (!this.selectedDemande || !this.taskId) return;
 
@@ -297,7 +324,7 @@ export class ScolariteDashboardComponent implements OnInit {
     this.scolariteService.completeTask(
       this.taskId,
       'ACCEPTE',
-      this.commentaire || 'Dossier validé',
+      this.commentaire || 'Dossier validé par scolarité',
       'scolarite_admin'
     ).subscribe({
       next: () => {
@@ -305,21 +332,60 @@ export class ScolariteDashboardComponent implements OnInit {
         this.closeModal();
         this.loadDemandes();
         this.loadStatistiques();
-        alert('✅ Dossier validé avec succès');
+        // ✅ Toast au lieu de alert()
+        this.showNotification('Dossier validé avec succès', 'success');
       },
       error: (error) => {
         this.actionLoading = false;
         console.error('Erreur validation:', error);
-        alert('❌ Erreur lors de la validation');
+        this.showNotification('Erreur lors de la validation', 'error');
       }
     });
   }
+  // ── NOTIFICATION TOAST (remplace alert) ─────────────────────
+
+  toastVisible = false;
+  toastMessage = '';
+  toastType: 'success' | 'error' = 'success';
+
+  showNotification(message: string, type: 'success' | 'error'): void {
+    this.toastMessage = message;
+    this.toastType = type;
+    this.toastVisible = true;
+    setTimeout(() => this.toastVisible = false, 3500);
+  }
+
+  // rejeterDossier() {
+  //   if (!this.selectedDemande || !this.taskId || !this.commentaire.trim()) {
+  //     alert('⚠️ Veuillez saisir un motif de rejet');
+  //     return;
+  //   }
+
+  //   this.actionLoading = true;
+  //   this.scolariteService.completeTask(
+  //     this.taskId,
+  //     'REJETE',
+  //     this.commentaire,
+  //     'scolarite_admin'
+  //   ).subscribe({
+  //     next: () => {
+  //       this.actionLoading = false;
+  //       this.closeModal();
+  //       this.loadDemandes();
+  //       this.loadStatistiques();
+  //       alert('✅ Dossier rejeté');
+  //     },
+  //     error: (error) => {
+  //       this.actionLoading = false;
+  //       console.error('Erreur rejet:', error);
+  //       alert('❌ Erreur lors du rejet');
+  //     }
+  //   });
+  // }
+  // ── MODIFIER rejeterDossier() — plus de alert() ──────────────
 
   rejeterDossier() {
-    if (!this.selectedDemande || !this.taskId || !this.commentaire.trim()) {
-      alert('⚠️ Veuillez saisir un motif de rejet');
-      return;
-    }
+    if (!this.selectedDemande || !this.taskId || !this.commentaire.trim()) return;
 
     this.actionLoading = true;
     this.scolariteService.completeTask(
@@ -333,12 +399,12 @@ export class ScolariteDashboardComponent implements OnInit {
         this.closeModal();
         this.loadDemandes();
         this.loadStatistiques();
-        alert('✅ Dossier rejeté');
+        this.showNotification('Dossier rejeté', 'success');
       },
       error: (error) => {
         this.actionLoading = false;
         console.error('Erreur rejet:', error);
-        alert('❌ Erreur lors du rejet');
+        this.showNotification('Erreur lors du rejet', 'error');
       }
     });
   }
@@ -393,15 +459,15 @@ export class ScolariteDashboardComponent implements OnInit {
   }
 
   getAvatarColor(index: number): string {
-    const colors = [
-      'bg-blue-500',
-      'bg-teal-500',
-      'bg-purple-500',
-      'bg-pink-500',
-      'bg-indigo-500',
-      'bg-green-500'
+    const gradients = [
+      'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', // Indigo-Purple
+      'linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%)', // Blue-Teal
+      'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)', // Amber-Red
+      'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)', // Emerald-Blue
+      'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)', // Pink-Violet
+      'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)'  // Cyan-Blue
     ];
-    return colors[index % colors.length];
+    return gradients[index % gradients.length];
   }
 
   formatDate(dateString: string): string {
@@ -746,12 +812,65 @@ export class ScolariteDashboardComponent implements OnInit {
     if (this.hasRole('AGENT_SCOLARITE')) return 'AGENT_SCOLARITE';
     return 'Agent Scolarité';
   }
-
   getProfileInitials(): string {
     if (!this.userProfile) return 'IT';
     const first = this.userProfile.firstName?.charAt(0) || '';
     const last = this.userProfile.lastName?.charAt(0) || '';
     return (first + last).toUpperCase() || 'IT';
+  }
+
+  getPagesArray(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i);
+  }
+  // ── NOUVELLE MÉTHODE : stepper workflow ─────────────────────
+
+  /**
+   * Détermine si une étape du workflow est terminée
+   * selon le statut actuel du dossier
+   */
+  isStepDone(step: string): boolean {
+    if (!this.selectedDemande) return false;
+    const statut = this.selectedDemande.statutActuel || '';
+
+    const order = [
+      'SOUMIS',
+      'SCOLARITE_VALIDEE',    // correspond à 'SCOLARITE'
+      'DEPARTEMENT_VALIDE',   // correspond à 'DEPARTEMENT'
+      'PAYMENT_VALID',
+      'INSCRIT'
+    ];
+
+    const stepMap: Record<string, string> = {
+      'SCOLARITE': 'SCOLARITE_VALIDEE',
+      'DEPARTEMENT': 'DEPARTEMENT_VALIDE',
+      'PAIEMENT': 'PAYMENT_VALID',
+      'INSCRIT': 'INSCRIT'
+    };
+
+    const targetStatus = stepMap[step];
+    if (!targetStatus) return false;
+
+    const currentIndex = order.indexOf(statut);
+    const targetIndex = order.indexOf(targetStatus);
+
+    return currentIndex >= targetIndex && currentIndex !== -1;
+  }
+
+  /**
+   * Détermine si une étape est l'étape courante (active)
+   */
+  isStepActive(step: string): boolean {
+    if (!this.selectedDemande) return false;
+    const statut = this.selectedDemande.statutActuel || '';
+
+    const stepMap: Record<string, string[]> = {
+      'SCOLARITE': ['SOUMIS', 'EN_COURS_SCOLARITE'],
+      'DEPARTEMENT': ['SCOLARITE_VALIDEE'],
+      'PAIEMENT': ['DEPARTEMENT_VALIDE'],
+      'INSCRIT': ['PAYMENT_VALID'],
+    };
+
+    return stepMap[step]?.includes(statut) ?? false;
   }
 
 }
